@@ -18,25 +18,6 @@ namespace :pbuilder do
 
 end
 
-# task :hpklinux do
-#   sh "wget -m --no-directories http://www.rivendellaudio.org/ftpdocs/audioscience/hpklinux-3.08.05.tar.bz2"
-#   sh "tar -xjf hpklinux-3.08.05.tar.bz2"
-
-#   sh "ln -s hpklinux-3.08.05.tar.gz hpklinux-3.08.05.orig.tar.gz"
-
-#   Dir.chdir("hpklinux-3.08.05") do
-# #    sh "fakeroot ./debian/rules binary"
-#     sh "dch --newversion 3.08.05-0 'New upstream version'"
-#     sh "dpkg-buildpackage -rfakeroot -k9CC21102"
-#   end
-
-#   pbuilder :build, "hpklinux_3.08.05-0.dsc"
-
-#   %w{hpklinux-source hpklinux libhpi}.each do |package|
-#     cp "/var/cache/pbuilder/result/stable/${package}*_3.08.05-0*" "."
-#   end
-# end
-
 def uncompress(archive)
   options = 
     case archive
@@ -51,26 +32,6 @@ end
 
 def get(url)
   sh "wget -m --no-directories #{url}"  
-end
-
-file 'hpklinux-3.08.05.tar.bz2' do
-  get "http://www.rivendellaudio.org/ftpdocs/audioscience/hpklinux-3.08.05.tar.bz2"
-end
-
-file 'hpklinux-3.08.05' => 'hpklinux-3.08.05.tar.bz2' do
-  directory 'hpklinux-3.08.05'
-  sh "tar -xjf hpklinux-3.08.05.tar.bz2"
-end
-
-file 'hpklinux-3.08.05.orig.tar.bz2' => 'hpklinux-3.08.05.tar.bz2' do |t|
-  sh "ln -s #{t.prerequisites[0]} #{t.name}"
-end
-
-file 'hpklinux_3.08.05-0.dsc' => [ 'hpklinux-3.08.05', 'hpklinux-3.08.05.orig.tar.bz2' ] do
-  Dir.chdir("hpklinux-3.08.05") do  
-    sh "dch --newversion 3.08.05-0 'New upstream version'"
-    sh "dpkg-buildpackage -rfakeroot -k9CC21102"
-  end
 end
 
 def package_files(name, version, directory = '.')
@@ -120,20 +81,13 @@ def package_tasks(name, version)
     get source_tarball_url(name, version)
   end
 
-  task "source_directory_#{name}" => "source_tarball_#{name}" do
+  task "source_#{name}" => "source_tarball_#{name}" do
     uncompress source_tarball_name(name, version)
+    rm_rf "#{name}-#{version}/debian"
+    cp_r "#{name}/debian", "#{name}-#{version}/debian"
   end
 
-  task "install_dev_packages_#{name}" do
-    sudo "dpkg -i #{package_deb_files(name,version).join(' ')}"
-  end
-
-  task "install_build_depencies_#{name}" do
-    dependencies = build_dependencies(name)
-    sudo "apt-get install #{dependencies.join(' ')}" unless dependencies.empty?
-  end
-
-  task "buildpackage_#{name}" => [ "source_directory_#{name}", "install_build_depencies_#{name}" ] do
+  task "buildpackage_#{name}" => [ "source_#{name}", "install_build_depencies_#{name}" ] do
     unless File.exists?("#{name}_#{version}-0.dsc") 
       Dir.chdir("#{name}-#{version}") do  
         sh "dch --newversion #{version}-0 'New upstream version' || true"
@@ -154,6 +108,15 @@ def package_tasks(name, version)
     package_files(name, version, "/var/cache/pbuilder/result/stable").each do |file|
       cp file, "."
     end
+  end
+
+  task "install_dev_packages_#{name}" do
+    sudo "dpkg -i #{package_deb_files(name,version).join(' ')}"
+  end
+
+  task "install_build_depencies_#{name}" do
+    dependencies = build_dependencies(name)
+    sudo "apt-get install #{dependencies.join(' ')}" unless dependencies.empty?
   end
 
   task "clean_#{name}" do
