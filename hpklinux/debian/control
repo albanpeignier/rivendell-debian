@@ -1,0 +1,50 @@
+Source: hpklinux
+Section: sound
+Priority: optional
+# FIXME: correct build-depends
+Build-Depends: debhelper (>> 4.0)
+Maintainer: Alban Peignier <alban.peignier@free.fr>
+Standards-Version: 3.6.2
+
+Package: hpklinux-source
+Architecture: all
+Depends: module-assistant, ${misc:Depends}, debhelper (>> 4.0)
+Suggests: fakeroot
+Description: source for the hpklinux driver
+ This package provides the source code for the hpklinux kernel module,
+ a linux kernel driver to allow AudioScience cards to be controlled using the
+ HPI API.  This API is documented in
+ http://www.audioscience.com/internet/download/spchpi.pdf
+ .
+ In order to compile these modules you need the kernel sources (or the
+ kernel-headers for the kernel-image packages from Debian). For compile
+ instructions look into /usr/share/doc/hpklinux-source/README.Debian or simply
+ use the module-assistant utility.
+ .
+ The project's homepage can be found here:
+ http://www.salemradiolabs.com/rivendell/
+
+Package: hpklinux-utils
+Architecture: all
+Description: firmware and loading utils for hpklinux driver
+ This package provides the firmware and loading utilities for the hpklinux
+ driver to control AudioScience cards.
+
+Package: libhpi
+Architecture: all
+Description: libraries for the hpklinux driver
+ This package provides the shared libraries for the hpklinux drvier driver to
+ control AudioScience cards.
+
+Package: libhpiudp
+Architecture: all
+Description: libraries for network HPI
+ This package provides the shared libraries for network
+ control of AudioScience networked adapters.
+
+Package: libhpi-dev
+Architecture: all
+Depends: libhpi (= ${Source-Version})
+Description: libraries for the hpklinux driver
+ This package provides the shared libraries for the hpklinux drvier driver to
+ control AudioScience cards.

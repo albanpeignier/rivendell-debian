@@ -1,0 +1,24 @@
+Source: hpklinux
+Section: sound
+Priority: optional
+Maintainer: Alban Peignier <alban.peignier@free.fr>
+Build-Depends: debhelper (>> 4.0.0)
+Standards-Version: 3.6.2
+
+Package: hpklinux-module-_KVERS_
+Architecture: any
+Provides: hpklinux-module
+Depends: hpklinux-utils, kernel-image-_KVERS_ | linux-image-_KVERS_
+Description: hpklinux module for Linux (kernel _KVERS_).
+ This package contains the kernel module for the linux kernel driver to allow
+ AudioScience cards to be controlled using the HPI API.  This API is documented
+ in http://www.audioscience.com/internet/download/spchpi.pdf
+ .
+ please see /usr/share/doc/hpklinux-module-_KVERS_ for details.
+ .
+ This package contains the compiled kernel module for _KVERS_
+ .
+ If you have compiled your own kernel, you will most likely need to build
+ your own hpklinux-module.  The hpklinux-source package has been
+ provided for use with the Debian kernel-package utility to produce a version
+ of hpklinux-module for your kernel.

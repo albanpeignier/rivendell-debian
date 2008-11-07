@@ -1,0 +1,106 @@
+hpklinux (3.07.19-1) unstable; urgency=low
+
+  * New upstream release 3.07.19  See source drvnotes.txt, drvnotes_rc.txt for full details
+  * ASI8920,ASI6585 improvements
+  * ASI2400 convert to mono mixer
+  * ASI4215/ASI43xx - MPEG playback fix
+ -- AudioScience Linux Developers <linux@audioscience.com>  Fri, 07 Sep 2007 15:00:00 +1200
+
+hpklinux (3.07.12-1) unstable; urgency=low
+
+  * New upstream release 3.07.12  See source drvnotes.txt, drvnotes_rc.txt for full details
+  * ASI8920 add AM module
+  * Add dev class creation, allows udev to create asihpi device file
+ -- AudioScience Linux Developers <linux@audioscience.com>  Fri, 20 Jul 2007 15:09:00 +1200
+
+hpklinux (3.07.08-1) unstable; urgency=low
+
+  * New upstream release 3.07.08  See source drvnotes.txt, drvnotes_rc.txt for full details
+  * New models: 6511,6611,6518,6618
+  *   ASI8900 tuner with RDS
+  * Fixed: ASI6416 occasional startup problems
+  * Changed: hpi6205 uses 2^N size BBM buffers. ASI6416 supports UDP
+ -- AudioScience Linux Developers <linux@audioscience.com>  Tue, 30 Jan 2007 11:43:00 +1200
+
+hpklinux (3.05.10-1) unstable; urgency=low
+
+  * New upstream release 3.05.10  See source drvnotes.txt, drvnotes_rc.txt for full details
+  * Fix 64 bit compile
+ -- AudioScience Linux Developers <linux@audioscience.com>  Tue, 30 Jan 2007 11:43:00 +1200
+
+hpklinux (3.05.07-1) unstable; urgency=low
+
+  * New upstream release 3.05.07  See source drvnotes.txt, drvnotes_rc.txt for full details
+  * ASI6416 control caching and SRC init fix
+
+ -- AudioScience Linux Developers <linux@audioscience.com>  Tue, 19 Dec 2006 10:59:00 +1200
+
+hpklinux (3.05.05-1) unstable; urgency=low
+
+  * New upstream release 3.05.05  See source drvnotes.txt, drvnotes_rc.txt for full details
+  * Change location of firmware install to /lib/firmware
+  * 64 bit compatibility
+
+ -- AudioScience Linux Developers <linux@audioscience.com>  Tue, 19 Dec 2006 10:59:00 +1200
+
+hpklinux (3.00-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Federico Grau <grauf@rfa.org>  Mon, 24 Jul 2006 15:28:31 -0400
+
+hpklinux (2.96-9) unstable; urgency=low
+
+  * Remove dh_clean from the install rules.  It was cleaning out needed files
+    between the multiple binary targts.
+
+ -- Federico Grau <grauf@rfa.org>  Fri,  3 Feb 2006 16:05:54 -0500
+
+hpklinux (2.96-8) unstable; urgency=low
+
+  * This should now be functional for the regular packages and the -source /
+    -module package also.
+
+ -- Federico Grau <grauf@rfa.org>  Thu,  2 Feb 2006 19:46:50 -0500
+
+hpklinux (2.96-7) unstable; urgency=low
+
+  * Add more directories to the hpklinux-source package.
+
+ -- Federico Grau <grauf@rfa.org>  Thu,  2 Feb 2006 18:23:21 -0500
+
+hpklinux (2.96-6) unstable; urgency=low
+
+  * the try again build
+
+ -- Federico Grau <grauf@rfa.org>  Thu,  2 Feb 2006 18:13:39 -0500
+
+hpklinux (2.96-5) unstable; urgency=low
+
+  * Massage some more ...argh!!! (working on hpklinux-source now).
+
+ -- Federico Grau <grauf@rfa.org>  Thu,  2 Feb 2006 17:50:46 -0500
+
+hpklinux (2.96-4) unstable; urgency=low
+
+  * Add the init script to hpkutils-utils
+
+ -- Federico Grau <grauf@rfa.org>  Wed,  1 Feb 2006 15:44:56 -0500
+
+hpklinux (2.96-3) unstable; urgency=low
+
+  * and try again :-/
+
+ -- Federico Grau <grauf@rfa.org>  Tue, 31 Jan 2006 16:47:30 -0500
+
+hpklinux (2.96-2) unstable; urgency=low
+
+  * correct missing library. in libhpi sub-package
+
+ -- Federico Grau <grauf@rfa.org>  Tue, 31 Jan 2006 16:29:16 -0500
+
+hpklinux (2.96-1) unstable; urgency=low
+
+  * new upstream release
+
+ -- Federico Grau <grauf@rfa.org>  Thu, 26 Jan 2006 19:52:23 -0500

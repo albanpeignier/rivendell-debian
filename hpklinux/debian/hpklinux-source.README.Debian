@@ -1,0 +1,17 @@
+# hpklinux module source package
+# ------------------------------
+
+
+In order to build the hpklinux kernel module from source use
+module-assistant.
+
+e.g.
+
+module-assistant update
+
+# for kernel version "2.6.17.6-rivendell-0" in directory "/usr/src/linux-2.6.17.6/"
+module-assistant -v -t -l2.6.17.6-rivendell-0 -k/usr/src/linux-2.6.17.6/  build  hpklinux
+
+For now the kernel source must be installed for this to work.
+
+# Federico Grau, based on work by Alban Peignier

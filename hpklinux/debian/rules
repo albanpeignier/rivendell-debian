@@ -1,0 +1,221 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# Sample debian/rules that uses debhelper.
+# GNU copyright 1997 to 1999 by Joey Hess.
+#
+# Modified to make a template file for a multi-binary package with separated
+# build-arch and build-indep targets  by Bill Allombert 2001
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+
+
+### KERNEL SETUP
+### module-assistant rules to prepare a source package to generate custom
+### kernel modules.
+
+PACKAGE=hpklinux-module
+psource=hpklinux-source
+
+MA_DIR ?= /usr/share/modass
+-include $(MA_DIR)/include/generic.make
+-include $(MA_DIR)/include/common-rules.make
+
+# This has to be exported to make some magic below work.
+export DH_OPTIONS
+export NAME = hpklinux-$(VERSION)
+CFLAGS = -Wall -g
+
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0
+else
+	CFLAGS += -O2
+endif
+ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
+	INSTALL_PROGRAM += -s
+endif
+
+MAJOR=$(shell echo $(KVERS) | sed -e 's/\(...\).*/\1/')
+
+kdist_clean:
+	dh_clean
+	-make -C drv clean
+	-make -C v4l clean
+
+# prep-deb-files rewrites the debian/ files as needed. See RATIONALE for
+# details
+
+kdist_config: prep-deb-files
+kdist_configure: kdist_config
+
+# nothing else to configure more things in this package, $(MAJOR) above
+# is everything needed
+
+# the binary-modules target prepares the $(pmodules) package.
+# It is called by module-assistant and *not* during a normal build
+binary-modules: prep-deb-files
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	./configure --prefix=/usr --with-kernel=$(KSRC) --with-build=$(KSRC)
+	make
+	install -m644 -b -D drv/asihpi.ko $(CURDIR)/debian/$(PKGNAME)/lib/modules/$(KVERS)/kernel/extra/asihpi.ko
+	install -m644 -b -D v4l/radio-asihpi.ko $(CURDIR)/debian/$(PKGNAME)/lib/modules/$(KVERS)/kernel/extra/radio-asihpi.ko
+	dh_installdocs
+	dh_installchangelogs
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_gencontrol -- -v$(VERSION)
+	dh_md5sums
+	dh_builddeb --destdir=$(DEB_DESTDIR)
+
+
+
+### end  KERNEL SETUP
+
+
+#
+# configure and build of package utilities and libraries.
+
+configure: configure-stamp
+configure-stamp:
+	dh_testdir
+
+	# for the debian package, the kernel module is not compiled.  Instead it is
+	# packaged so users can compile their own custom kernel module.
+	./configure --prefix=/usr --with-firmware=`pwd`/debian/tmp/lib/firmware/ --disable-kernel-compile
+
+	touch configure-stamp
+
+
+build-arch: configure-stamp build-arch-stamp
+build-arch-stamp:
+	dh_testdir
+
+	# Architecture dependant build.
+	$(MAKE)
+
+	touch build-arch-stamp
+
+build-indep:  configure-stamp build-indep-stamp
+build-indep-stamp:
+	dh_testdir
+
+	# Nothing to build for architecture independence.
+
+	touch build-indep-stamp
+
+build: build-arch build-indep
+
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-arch-stamp build-indep-stamp configure-stamp install-arch-stamp install-indep-stamp debian/hpklinux-utils.init
+
+	# Add here commands to clean up after the build process.
+	-$(MAKE) clean
+	-$(MAKE) distclean
+
+	dh_clean
+
+##install: install-indep install-arch build
+install-arch: build install-arch-stamp
+install-arch-stamp:
+	dh_testdir
+	dh_testroot
+#	dh_clean -k -i
+	dh_installdirs -i
+
+	# Add here commands to install the remaining package components
+###	$(MAKE) prefix=`pwd`/debian/tmp install
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
+### $(MAKE) install DESTDIR=$(CURDIR)/debian/$(PACKAGE)
+
+	dh_install --sourcedir=debian/tmp --autodest
+	touch install-arch-stamp
+
+
+install-indep: build install-indep-stamp
+install-indep-stamp:
+	dh_testdir
+	dh_testroot
+#	dh_clean -k -i
+	dh_installdirs -i
+
+##	# Create the directories to install the source into
+	dh_installdirs -p$(psource) usr/src/modules/$(PACKAGE)/debian
+
+	# Copy files required to compile the driver source
+	cp configure\
+		aclocal.m4\
+		configure.in\
+		config.guess\
+		config.status\
+		config.sub\
+		depcomp\
+		hpklinux.spec.in\
+		install-sh\
+		libtool\
+		ltmain.sh\
+		missing\
+		Makefile\
+		Makefile.in\
+		Makefile.am\
+		\
+		debian/$(psource)/usr/src/modules/$(PACKAGE)
+	cp -a firmware debian/$(psource)/usr/src/modules/$(PACKAGE)
+	cp -a alsa debian/$(psource)/usr/src/modules/$(PACKAGE)
+	cp -a drv debian/$(psource)/usr/src/modules/$(PACKAGE)
+	cp -a v4l debian/$(psource)/usr/src/modules/$(PACKAGE)
+	cp -a lib debian/$(psource)/usr/src/modules/$(PACKAGE)
+	cp -a test debian/$(psource)/usr/src/modules/$(PACKAGE)
+	cp -f -a *slack* debian/$(psource)/usr/src/modules/$(PACKAGE)
+	make -C debian/$(psource)/usr/src/modules/$(PACKAGE) clean
+
+	# Copy the needed debian/ pieces to the proper location
+	cd debian ; cp changelog compat control *.modules.in rules copyright \
+	        $(psource)/usr/src/modules/$(PACKAGE)/debian/
+	cd debian/$(psource)/usr/src && \
+	        tar c modules | gzip -9 > hpklinux-source.tar.gz && rm -rf modules
+
+	touch install-indep-stamp
+
+
+install:  install-arch install-indep
+
+
+
+binary-common:
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs
+	dh_installdocs
+	cp drv/asihpi.rules debian/hpklinux-utils.udev
+	dh_installudev --priority=45
+	# Bring in Fred's init script, to be installed to the debian system.
+	cp drv/asihpi debian/hpklinux-utils.init
+	dh_installinit --no-start
+	dh_link
+	dh_strip
+	dh_compress
+	dh_fixperms
+	dh_makeshlibs
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+# Build architecture independant packages using the common target.
+##binary-indep: install-indep binary-common
+binary-indep: build install binary-common
+##	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-common
+
+binary-arch: build install binary-common
+
+binary: binary-indep binary-arch
+
+.PHONY: clean binary-indep binary-arch binary install install-indep install-arch
