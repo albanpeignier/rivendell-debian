@@ -6,7 +6,7 @@ Build-Depends: debhelper, autoconf, automake1.9, dpatch, libtool, libjack0.80.0-
 Standards-Version: 3.6.1
  
 Package: rivendell
-Architecture: i386
+Architecture: i386 amd64
 Depends: ${shlibs:Depends}, bc, cdda2wav, cdparanoia, flac, lame, libqt3-mt-mysql | libqt3c102-mt-mysql, libhpi, mpg321, sox, vorbis-tools
 Recommends: jackd, logrotate
 Description: Rivendell binaries - contains a full set of functionality needed to operate a radio
@@ -30,7 +30,7 @@ Description: Rivendell binaries - contains a full set of functionality needed to
  RDAirPlay: the on-air playout application.
 
 Package: librivendell
-Architecture: i386
+Architecture: i386 amd64
 Depends: ${shlibs:Depends}
 Description: Rivendell library - C++ runtime library
  Contains a full set of functionality needed to operate a radio

@@ -25,25 +25,25 @@ Description: source for the hpklinux driver
  http://www.salemradiolabs.com/rivendell/
 
 Package: hpklinux-utils
-Architecture: all
+Architecture: i386 amd64
 Description: firmware and loading utils for hpklinux driver
  This package provides the firmware and loading utilities for the hpklinux
  driver to control AudioScience cards.
 
 Package: libhpi
-Architecture: all
+Architecture: i386 amd64
 Description: libraries for the hpklinux driver
  This package provides the shared libraries for the hpklinux drvier driver to
  control AudioScience cards.
 
 Package: libhpiudp
-Architecture: all
+Architecture: i386 amd64
 Description: libraries for network HPI
  This package provides the shared libraries for network
  control of AudioScience networked adapters.
 
 Package: libhpi-dev
-Architecture: all
+Architecture: i386 amd64
 Depends: libhpi (= ${Source-Version})
 Description: libraries for the hpklinux driver
  This package provides the shared libraries for the hpklinux drvier driver to
