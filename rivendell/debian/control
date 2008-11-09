@@ -2,7 +2,7 @@ Source: rivendell
 Section: sound
 Priority: optional
 Maintainer: Alban Peignier <alban.peignier@free.fr>
-Build-Depends: debhelper, autoconf, automake1.9, dpatch, libtool, libjack0.80.0-dev | libjack0.100.0-dev, libqt3-mt-dev, libasound2-dev, libsamplerate0-dev, libvorbis-dev, libtag1-dev, libid3-dev, libflac-dev, libpam0g-dev, libhpi-dev
+Build-Depends: debhelper, autoconf, automake1.9, dpatch, libtool, libjack-dev, libqt3-mt-dev, libasound2-dev, libsamplerate0-dev, libvorbis-dev, libtag1-dev, libid3-dev, libflac-dev, libpam0g-dev, libhpi-dev
 Standards-Version: 3.6.1
  
 Package: rivendell
