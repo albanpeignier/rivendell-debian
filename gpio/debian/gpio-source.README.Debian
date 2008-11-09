@@ -1,0 +1,15 @@
+# GPIO module source package
+# ------------------------------
+
+
+In order to build the gpio kernel module from source use
+module-assistant.
+
+e.g.
+
+module-assistant update
+modula-assistant build gpio
+
+You need to have the kernel header files installed for this to work
+
+# Alban Peignier

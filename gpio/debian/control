@@ -1,0 +1,42 @@
+Source: gpio
+Section: contrib/sound
+Priority: optional
+Build-Depends: debhelper (>> 4.0)
+Maintainer: Alban Peignier <alban.peignier@free.fr>
+Standards-Version: 3.6.2.0
+
+Package: gpio-source
+Architecture: all
+Depends: module-assistant, ${misc:Depends}, debhelper (>> 4.0)
+Suggests: fakeroot
+Description: source for the gpio driver
+ This package provides the source code for the gpio kernel module,
+ a linux kernel driver for the line of general purpose input/output 
+ (GPIO) data acquisition boards made by MeasurementComputing 
+ (http://www.measurementcomputing.com).
+ .
+ The following boards are currently supported:
+ .
+    CIO-DIO24
+    PCI-DIO24
+    PCI-PDISO8
+    PCI-PDISO16
+    PCI-DAS1000 (Digital section only)
+ .
+ In order to compile these modules you need the kernel sources (or the
+ kernel-headers for the kernel-image packages from Debian). For compile
+ instructions look into /usr/share/doc/gpio-source/README.Debian or
+ simply use the module-assistant utility.
+ .
+ The project's homepage can be found here:
+ http://www.salemradiolabs.com/rivendell/
+
+Package: gpio-kernel-headers
+Architecture: all
+Description: Header files for the gpio driver
+ The gpio module provides a linux kernel driver for the line of 
+ general purpose input/output (GPIO) data acquisition boards made 
+ by MeasurementComputing (http://www.measurementcomputing.com).
+ .
+ You need this package if you intend to compile userspace applications that
+ access gpio specific interfaces.

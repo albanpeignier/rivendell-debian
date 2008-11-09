@@ -1,0 +1,18 @@
+This package was debianized by Alban Peignier <alban.peignier@free.fr> on
+Thu, 01 Sep 2005 23:05:00 +0200.
+
+It was downloaded from http://www.salemradiolabs.com/rivendell/download.shtml
+
+Upstream Authors:
+Fred Gleason <fredg@salemradiolabs.com>
+
+Copyright lies with the upstream authors.
+
+License:
+
+ This program is free software; you can redistribute it and/or modify it
+ under the terms of the GNU General Public License as published by the
+ Free Software Foundation; either version 2 of the License, or (at your
+ option) any later version.
+
+  See /usr/share/common-licenses/GPL-2 on your debian system.

@@ -1,0 +1,125 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# Sample debian/rules that uses debhelper.
+# GNU copyright 1997 to 1999 by Joey Hess.
+#
+# Modified to make a template file for a multi-binary package with separated
+# build-arch and build-indep targets  by Bill Allombert 2001
+
+# module-assistant rules
+
+PACKAGE=gpio-module
+psource=gpio-source
+
+MA_DIR ?= /usr/share/modass
+-include $(MA_DIR)/include/generic.make
+-include $(MA_DIR)/include/common-rules.make
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# This has to be exported to make some magic below work.
+export DH_OPTIONS
+
+export NAME = gpio-$(VERSION)
+
+CFLAGS = -Wall -g
+
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0
+else
+	CFLAGS += -O2
+endif
+ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
+	INSTALL_PROGRAM += -s
+endif
+
+MAJOR=$(shell echo $(KVERS) | sed -e 's/\(...\).*/\1/')
+
+kdist_clean:
+	dh_clean
+	make -C driver clean
+
+# prep-deb-files rewrites the debian/ files as needed. See RATIONALE for
+# details
+
+kdist_config: prep-deb-files
+kdist_configure: kdist_config
+
+# nothing else to configure more things in this package, $(MAJOR) above
+# is everything needed
+
+binary-modules: prep-deb-files
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	make -C driver KERNEL_DIR=$(KSRC) MODVERSIONS=detect KERNEL=linux-$(KVERS)
+	install -m644 -b -D driver/gpio.ko $(CURDIR)/debian/$(PKGNAME)/lib/modules/$(KVERS)/kernel/drivers/char/gpio.ko
+	dh_installdocs
+	dh_installchangelogs
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_gencontrol -- -v$(VERSION)
+	dh_md5sums
+	dh_builddeb --destdir=$(DEB_DESTDIR)
+
+# Here we do not have to build
+build: 
+
+clean:
+	dh_testdir
+	dh_testroot
+
+	# Add here commands to clean up after the build process.
+
+	dh_clean 
+
+install: install-indep install-arch
+install-indep:
+	dh_testdir
+	dh_testroot
+	dh_clean -k -i 
+	dh_installdirs -i    
+	
+	[ -x configure ] && ./configure   
+
+	# Copy only the driver source to the proper location
+	mkdir -p debian/$(psource)/usr/src/modules/gpio/driver
+	cp drv/Makefile-2.6 debian/$(psource)/usr/src/modules/gpio/driver/Makefile
+	cp drv/gpio.c drv/gpio.h debian/$(psource)/usr/src/modules/gpio/driver/
+	
+	mkdir -p debian/gpio-kernel-headers/usr/include/linux
+	cp drv/gpio.h debian/gpio-kernel-headers/usr/include/linux/
+	
+	# Copy the needed debian/ pieces to the proper location
+	mkdir -p debian/$(psource)/usr/src/modules/gpio/debian
+	cd debian ; cp changelog control compat *.modules.in rules copyright \
+	        $(psource)/usr/src/modules/gpio/debian/
+	cd debian/$(psource)/usr/src && \
+	        tar c modules | gzip -9 > gpio-source.tar.gz && rm -rf modules
+	dh_install -i
+
+binary-common:
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs 
+	dh_installdocs
+	dh_installinit --name=realtime -- defaults 15
+	dh_link
+	dh_strip
+	dh_compress 
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+# Build architecture independant packages using the common target.
+binary-indep: install-indep
+	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-common
+
+
+binary: binary-indep
+.PHONY: build clean binary-indep binary-arch binary install install-indep install-arch configure
