@@ -44,12 +44,16 @@ class PBuilder
 
   def options_arguments
     @options.collect do |option, argument| 
-      if argument == true
-        "--#{option}"
+      command_option = "--#{option}"
+      case argument
+      when true
+        command_option        
+      when Array
+        argument.collect { |a| "#{command_option} #{a}" }
       else 
-        "--#{option} #{argument}" 
+        "#{command_option} #{argument}" 
       end
-    end
+    end.flatten
   end
 
   def before_exec(proc)
@@ -74,8 +78,11 @@ class Platform
 
   @@all = 
     %w{stable testing unstable}.collect do |distribution|
-      Platform.new(distribution, "i386")
-    end
+    architectures = ['i386'] 
+    architectures << 'amd64' if PLATFORM == "x86_64-linux"
+
+    architectures.collect { |architecture| Platform.new(distribution, architecture) }
+    end.flatten
 
   def self.all
     @@all
@@ -93,13 +100,28 @@ class Platform
     distribution == :stable
   end
 
+  def local_architecture?
+    case architecture
+    when 'amd64'
+      PLATFORM == "x86_64-linux"
+    when 'i386'
+      PLATFORM == "i486-linux"
+    end
+  end
+
   def pbuilder(options = {})
     PBuilder.new do |p|
-      p[:basetgz] = "/var/cache/pbuilder/base-#{distribution}.tgz"
+      p[:basetgz] = "/var/cache/pbuilder/base-#{distribution}-#{architecture}.tgz"
       p[:othermirror] = "'deb file:#{build_result_directory} ./'"
       p[:bindmounts] = p[:buildresult] = build_result_directory
       p[:distribution] = distribution
       p[:hookdir] = default_hooks_directory
+
+      unless local_architecture?
+        # to use i386 on amd64 architecture
+        p[:debootstrapopts] = "--arch=#{architecture}"
+        p[:debbuildopts] = "-a#{architecture}"
+      end
 
       p.options = options
 
@@ -138,6 +160,10 @@ class Platform
 
   def to_s(separator = '/')
     "#{distribution}#{separator}#{architecture}"
+  end
+
+  def task_name
+    to_s '_'
   end
 
 end
@@ -235,7 +261,6 @@ class Package < Rake::TaskLib
     end
   end
 
-
   def source_tarball_url
     remote_directory = 
       unless package == :hpklinux 
@@ -332,11 +357,30 @@ namespace "packages" do
   
 end
 
+task :setup => "pbuilder:setup" do
+  sudo "apt-get install devscripts"
+end
+
 task "clean" => "packages:clean" do
   rm_rf "build"
 end
 
 namespace :pbuilder do
+  include HelperMethods
+
+  desc "Install pbuilder"
+  task :setup do 
+    sudo "apt-get install pbuilder"
+  end
+
+  namespace "create" do
+    Platform.each do |platform| 
+      desc "Create pbuilder base image for #{platform}"
+      task platform.task_name do
+        platform.pbuilder.exec :create
+      end
+    end
+  end
 
   desc "Update pbuilder"
   task :update do
