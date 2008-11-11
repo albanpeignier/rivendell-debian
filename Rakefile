@@ -34,6 +34,10 @@ class PBuilder
     yield self if block_given?
   end
 
+  def [](option)
+    @options[option.to_sym]
+  end
+
   def []=(option, value)
     @options[option.to_sym] = value
   end
@@ -69,27 +73,49 @@ end
 
 class Platform
 
-  attr_reader :distribution, :architecture
+  attr_reader :flavor, :distribution, :architecture
 
-  def initialize(distribution, architecture)
+  def initialize(flavor, distribution, architecture)
+    @flavor = flavor
     @distribution = distribution.to_sym
     @architecture = architecture
   end
 
-  @@all = 
-    %w{stable testing unstable}.collect do |distribution|
+  def self.supported_architectures
     architectures = ['i386'] 
     architectures << 'amd64' if PLATFORM == "x86_64-linux"
-
-    architectures.collect { |architecture| Platform.new(distribution, architecture) }
-    end.flatten
+    architectures
+  end
 
   def self.all
-    @@all
+    @@all ||= debian_platforms + ubuntu_platforms
+  end
+
+  def self.debian_platforms
+    @@debian_platforms ||= 
+      %w{stable testing unstable}.collect do |distribution|
+      supported_architectures.collect { |architecture| Platform.new(:debian, distribution, architecture) }
+    end.flatten
+  end
+
+  def self.ubuntu_platforms
+    @@ubuntu_platforms ||= 
+      %w{intrepid}.collect do |distribution|
+      supported_architectures.collect { |architecture| Platform.new(:ubuntu, distribution, architecture) }
+    end.flatten
+  end
+
+  def mirror
+    case flavor
+    when :debian
+      "http://ftp.fr.debian.org/debian"
+    when :ubuntu
+      'http://fr.archive.ubuntu.com/ubuntu'
+    end
   end
 
   def self.each(&block)
-    @@all.each &block
+    all.each &block
   end
 
   def build_result_directory
@@ -119,8 +145,18 @@ class Platform
 
       unless local_architecture?
         # to use i386 on amd64 architecture
-        p[:debootstrapopts] = "--arch=#{architecture}"
+        p[:debootstrapopts] ||= []
+        p[:debootstrapopts] << "--arch=#{architecture}"
+
         p[:debbuildopts] = "-a#{architecture}"
+      end
+
+      p[:mirror] = mirror
+
+      if flavor == :ubuntu
+        # cdebootstrap fails with ubuntu
+        p[:components] = "'main universe'"
+        p[:debootstrap] = 'debootstrap'
       end
 
       p.options = options
@@ -326,7 +362,7 @@ namespace "package" do
   
   packages << :rivendell
   Package.new(:rivendell) do |t|
-    t.version = '1.1.0'
+    t.version = '1.1.1'
   end
 
   packages << :gpio
@@ -357,8 +393,19 @@ namespace "packages" do
   
 end
 
+task :packages => [ "packages:sources", "packages:binaries", "packages:upload" ]
+
 task :setup => "pbuilder:setup" do
   sudo "apt-get install devscripts"
+end
+
+namespace :setup do
+
+  task :ubuntu do
+    get 'http://fr.archive.ubuntu.com/ubuntu/pool/main/u/ubuntu-keyring/ubuntu-keyring_2008.03.04_all.deb'
+    sudo "dpkg -i ubuntu-keyring_2008.03.04_all.deb"
+  end
+
 end
 
 task "clean" => "packages:clean" do
