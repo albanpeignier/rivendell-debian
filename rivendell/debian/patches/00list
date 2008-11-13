@@ -2,3 +2,4 @@
 # See dpatch (1) in the man pages for more info.
 # Brief summary is to uncomment patches to be applied in this file.
 #07_extra_paren
+08_rdconf_open_arguments.dpatch

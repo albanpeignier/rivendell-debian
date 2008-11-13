@@ -1,0 +1,21 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 08_rdconf_open_arguments.dpatch by  <alban.peignier@free.fr>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Fixes a missing comma in open invocation
+
+@DPATCH@
+
+diff --git a/lib/rdconf.cpp b/lib/rdconf.cpp
+index 20a8791..e3eefed 100644
+--- a/lib/rdconf.cpp
++++ b/lib/rdconf.cpp
+@@ -247,7 +247,7 @@ int IncrementIndex(char *sPathname,int dMaxIndex)
+   strcat(sLockname,".LCK");
+   i=0;
+   while(dLockname<0 && i<MAX_RETRIES) {
+-    dLockname=open(sLockname,O_WRONLY|O_EXCL|O_CREAT|S_IRUSR|S_IWUSR);
++    dLockname=open(sLockname,O_WRONLY|O_EXCL|O_CREAT,S_IRUSR|S_IWUSR);
+     i++;
+   }
+   if(dLockname<0) {
