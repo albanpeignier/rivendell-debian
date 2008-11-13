@@ -1,0 +1,22 @@
+Description: libpam linking problem
+Platforms: intrepid_i386, intrepid_amd64
+
+pam_rd.cpp: In function 'int pam_sm_authenticate(pam_handle_t*, int, int, const char**)':
+pam_rd.cpp:205: warning: deprecated conversion from string constant to 'char*'
+pam_rd.cpp:291: warning: format not a string literal and no format arguments
+/bin/bash ../libtool --tag=CXX --mode=link g++  -g -O2  -Wl,-Bsymbolic-functions -o pam_rd.so -shared -Xlinker -x pam_rd.o -lqui -lrd -lid3 -lFLAC -lvorbisfile -lvorbisenc -L/usr/share/qt3/lib -lqt-mt  -lSM -lICE  -lX11 -lXext -lXmu -lXt -lXi  -L../lib
+libtool: link: g++ -g -O2 -Wl,-Bsymbolic-functions -o .libs/pam_rd.so -Wl,-x pam_rd.o  -lqui /tmp/buildd/rivendell-1.1.1/lib/.libs/librd.so /usr/lib/libid3.so /usr/lib/libFLAC.so -L/usr/lib /usr/lib/libvorbisfile.so /usr/lib/libvorbisenc.so /usr/lib/libvorbis.so /usr/lib/libogg.so -L/usr/share/qt3/lib /usr/lib/libqt-mt.so -L/usr/X11R6/lib -laudio /usr/lib/libjpeg.so -lpng -lz -lXrender -lXrandr -lXcursor -lXinerama -lXft /usr/lib/libfreetype.so -lfontconfig -lm -ldl -lpthread -lSM -lICE -lX11 -lXext -lXmu -lXt -lXi -L/tmp/buildd/rivendell-1.1.1/lib
+/usr/lib/gcc/x86_64-linux-gnu/4.3.2/../../../../lib/crt1.o: In function `_start':
+(.text+0x20): undefined reference to `main'
+pam_rd.o: In function `converse(pam_handle*, int, pam_message**, pam_response**)':
+/tmp/buildd/rivendell-1.1.1/pam_rd/pam_rd.cpp:142: undefined reference to `pam_get_item'
+/tmp/buildd/rivendell-1.1.1/pam_rd/pam_rd.cpp:152: undefined reference to `pam_strerror'
+/tmp/buildd/rivendell-1.1.1/pam_rd/pam_rd.cpp:149: undefined reference to `pam_strerror'
+pam_rd.o: In function `ask_passwd(pam_handle*, int)':
+/tmp/buildd/rivendell-1.1.1/pam_rd/pam_rd.cpp:182: undefined reference to `pam_set_item'
+pam_rd.o: In function `pam_sm_authenticate':
+/tmp/buildd/rivendell-1.1.1/pam_rd/pam_rd.cpp:224: undefined reference to `pam_get_user'
+/tmp/buildd/rivendell-1.1.1/pam_rd/pam_rd.cpp:245: undefined reference to `pam_get_item'
+/tmp/buildd/rivendell-1.1.1/pam_rd/pam_rd.cpp:229: undefined reference to `pam_strerror'
+/tmp/buildd/rivendell-1.1.1/pam_rd/pam_rd.cpp:237: undefined reference to `pam_get_item'
+collect2: ld returned 1 exit status
