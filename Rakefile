@@ -27,11 +27,21 @@ end
 class PBuilder
   include HelperMethods
 
+  @@default_build_host = ENV['BUILD_HOST']
+
+  def self.default_build_host=(host)
+    @@default_build_host = host
+  end
+
   def initialize
     @options = {}
     @before_exec_callbacks = []
 
     yield self if block_given?
+  end
+
+  def build_host
+    @@default_build_host
   end
 
   def [](option)
@@ -66,7 +76,25 @@ class PBuilder
 
   def exec(command, *arguments)
     @before_exec_callbacks.each { |c| c.call }
-    sudo "pbuilder", command, *(options_arguments + arguments)
+
+    if build_host
+      remote_exec command, *arguments
+    else
+      sudo "pbuilder", command, *(options_arguments + arguments)
+    end
+  end
+
+  private 
+
+  def remote_exec(command, *arguments)
+    build_directory = "/var/tmp/rivendell-debian"
+    sh "rsync -av --cvs-exclude --exclude=Rakefile --delete . #{build_host}:#{build_directory}"
+
+    quoted_arguments = (options_arguments + arguments).join(' ').gsub("'","\\\\\"")
+    quoted_arguments = quoted_arguments.gsub(File.expand_path('.'), build_directory)
+
+    sh "ssh #{build_host} \"cd /var/tmp/rivendell-debian; sudo pbuilder #{command} #{quoted_arguments}\""
+    sh "rsync -av #{build_host}:#{build_directory}/ ."
   end
 
 end
@@ -82,9 +110,7 @@ class Platform
   end
 
   def self.supported_architectures
-    architectures = ['i386'] 
-    architectures << 'amd64' if PLATFORM == "x86_64-linux"
-    architectures
+    %w{i386 amd64}
   end
 
   def self.all
