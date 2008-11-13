@@ -1,0 +1,8 @@
+# Change to directory used to manipulate sources and binaries :
+#Package.build_directory = Platform.build_directory = '/var/tmp/rivendell-debian'
+
+if ENV['REMOTE_BUILD']
+  PBuilder.default_build_host = 'taitaiye.tryphon.priv'
+end
+
+

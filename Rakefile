@@ -24,10 +24,24 @@ module HelperMethods
 
 end
 
+module BuildDirectoryMethods
+
+  @@build_directory = '/var/tmp/rivendell-debian'
+
+  def build_directory=(directory)
+    @@build_directory = directory
+  end
+
+  def build_directory
+    @@build_directory or '/var/tmp/rivendell-debian'
+  end
+
+end
+
 class PBuilder
   include HelperMethods
 
-  @@default_build_host = ENV['BUILD_HOST']
+  @@default_build_host = nil
 
   def self.default_build_host=(host)
     @@default_build_host = host
@@ -100,6 +114,7 @@ class PBuilder
 end
 
 class Platform
+  extend BuildDirectoryMethods
 
   attr_reader :flavor, :distribution, :architecture
 
@@ -145,7 +160,7 @@ class Platform
   end
 
   def build_result_directory
-    File.expand_path "./binaries/#{distribution}/#{architecture}"
+    File.expand_path "#{Platform.build_directory}/binaries/#{distribution}/#{architecture}"
   end
 
   def stable?
@@ -161,9 +176,17 @@ class Platform
     end
   end
 
+  def pbuilder_base_file
+    "/var/cache/pbuilder/base-#{distribution}-#{architecture}.tgz"
+  end
+
+  def pbuilder_enabled?
+    File.exists? pbuilder_base_file
+  end
+
   def pbuilder(options = {})
     PBuilder.new do |p|
-      p[:basetgz] = "/var/cache/pbuilder/base-#{distribution}-#{architecture}.tgz"
+      p[:basetgz] = pbuilder_base_file
       p[:othermirror] = "'deb file:#{build_result_directory} ./'"
       p[:bindmounts] = p[:buildresult] = build_result_directory
       p[:distribution] = distribution
@@ -195,7 +218,7 @@ class Platform
   end
 
   def default_hooks_directory
-    "tmp/hooks"
+    "#{Package.build_directory}/tmp/hooks"
   end
 
   def prepare_build_result_directory
@@ -231,6 +254,7 @@ class Platform
 end
 
 class Package < Rake::TaskLib
+  extend BuildDirectoryMethods
   include HelperMethods
 
   attr_reader :name
@@ -344,7 +368,7 @@ class Package < Rake::TaskLib
   end
 
   def sources_directory
-    "sources"
+    "#{Package.build_directory}/sources"
   end
 
   def source_tarball_url
@@ -406,6 +430,8 @@ class Package < Rake::TaskLib
   end
 
 end
+
+require 'config' if File.exists? 'config.rb'
 
 packages = []
 
@@ -489,12 +515,16 @@ namespace :pbuilder do
 
   desc "Update pbuilder"
   task :update do
-    Platform.each { |platform| platform.pbuilder.exec :update }
+    Platform.each do |platform| 
+      next unless platform.pbuilder_enabled?
+      platform.pbuilder.exec :update
+    end
   end
 
   desc "Update pbuilder by overriding config"
   task :update_config do
     Platform.each do |platform| 
+      next unless platform.pbuilder_enabled?
       platform.pbuilder("override-config" => true).exec :update  
     end
   end
