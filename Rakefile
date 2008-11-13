@@ -234,7 +234,7 @@ class Package < Rake::TaskLib
   include HelperMethods
 
   attr_reader :name
-  attr_accessor :package, :version, :signing_key, :debian_increment
+  attr_accessor :package, :version, :signing_key, :debian_increment, :exclude_from_build
 
   def initialize(name)
     @name = @package = name
@@ -292,8 +292,8 @@ class Package < Rake::TaskLib
           end
         end
 
-        desc "Pbuild all binary package for #{package} #{version}"
-        task :all => Platform.all.collect { |platform| platform.to_s('_') }
+        desc "Pbuild binary package for #{package} #{version} (on #{default_platforms.join(', ')})"
+        task :all => default_platforms.collect { |platform| platform.task_name }
 
       end
 
@@ -319,6 +319,16 @@ class Package < Rake::TaskLib
         rm_f source_tarball_name
         rm_f orig_source_tarball_name
         rm_rf "#{source_directory}"
+      end
+    end
+  end
+
+  def default_platforms
+    unless exclude_from_build
+      Platform.all
+    else
+      Platform.all.reject do |platform|
+        platform.to_s.match exclude_from_build
       end
     end
   end
@@ -389,6 +399,8 @@ namespace "package" do
   packages << :rivendell
   Package.new(:rivendell) do |t|
     t.version = '1.1.1'
+    # 20081113-1226573081-intreprid-pamrd-libpam
+    t.exclude_from_build = /intrepid/
   end
 
   packages << :gpio
