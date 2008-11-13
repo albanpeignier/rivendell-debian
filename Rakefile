@@ -253,12 +253,18 @@ class Package < Rake::TaskLib
       namespace "source" do
         desc "Create source directory for #{package} #{version}"
         task "tarball" do
-          get source_tarball_url
+          mkdir_p sources_directory
+          Dir.chdir(sources_directory) do
+            get source_tarball_url
+          end
         end
 
         desc "Retrieve source tarball for #{package} #{version}"
         task "directory" => "tarball" do
-          uncompress source_tarball_name
+          Dir.chdir(sources_directory) do
+            uncompress source_tarball_name
+          end
+
           rm_rf "#{source_directory}/debian"
           cp_r "#{package}/debian", "#{source_directory}/debian"
         end
@@ -266,7 +272,9 @@ class Package < Rake::TaskLib
 
       desc "Build source package for #{package} #{version}"
       task "source" => "source:directory" do
-        sh "ln -fs #{source_tarball_name} #{orig_source_tarball_name}"
+        Dir.chdir(sources_directory) do  
+          sh "ln -fs #{source_tarball_name} #{orig_source_tarball_name}"
+        end
         Dir.chdir(source_directory) do  
           sh "dch --newversion #{debian_version} 'New upstream version' || true"
 
@@ -283,8 +291,8 @@ class Package < Rake::TaskLib
       namespace :pbuild do
         Platform.each do |platform|
           desc "Pbuild #{platform} binary package for #{package} #{version}"
-          task platform.to_s('_') do |t, args|
-            platform.pbuilder.exec :build, "#{name}_#{debian_version}.dsc"
+          task platform.task_name do |t, args|
+            platform.pbuilder.exec :build, "#{sources_directory}/#{name}_#{debian_version}.dsc"
 
             changes_file = "#{platform.build_result_directory}/#{name}_#{debian_version}_#{platform.architecture}.changes"
             # force target distribution
@@ -316,8 +324,10 @@ class Package < Rake::TaskLib
           rm_f package_files(platform.build_result_directory)
         end
 
-        rm_f source_tarball_name
-        rm_f orig_source_tarball_name
+        rm_f package_source_files
+
+        rm_f "#{sources_directory}/#{source_tarball_name}"
+        rm_f "#{sources_directory}/#{orig_source_tarball_name}"
         rm_rf "#{source_directory}"
       end
     end
@@ -331,6 +341,10 @@ class Package < Rake::TaskLib
         platform.to_s.match exclude_from_build
       end
     end
+  end
+
+  def sources_directory
+    "sources"
   end
 
   def source_tarball_url
@@ -360,7 +374,7 @@ class Package < Rake::TaskLib
   end
 
   def source_directory
-    "#{name}-#{version}"
+    "#{sources_directory}/#{name}-#{version}"
   end
 
   def debian_version
@@ -378,6 +392,12 @@ class Package < Rake::TaskLib
 
     fileparts.inject([]) do |files, filepart|
       files + Dir.glob("#{directory}/#{filepart}*#{debian_version}*")
+    end
+  end
+
+  def package_source_files
+    %w{.dsc .tar.gz _source.changes}.collect do |extension|
+      "#{sources_directory}/#{package}_#{debian_version}#{extension}"
     end
   end
 
