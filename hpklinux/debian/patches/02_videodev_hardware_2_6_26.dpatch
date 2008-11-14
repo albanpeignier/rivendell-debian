@@ -1,0 +1,22 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 02_videodev_hardware_2_6_26.dpatch by  <alban.peignier@free.fr>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Skip videoved.harware for kernel >= 2.6.26
+
+@DPATCH@
+
+diff --git a/v4l/asihpi-v4l.c b/v4l/asihpi-v4l.c
+index d11a9b7..e4d19e1 100644
+--- a/v4l/asihpi-v4l.c
++++ b/v4l/asihpi-v4l.c
+@@ -565,7 +565,9 @@ int init_module(void)
+ 	    sprintf(radio_asihpi_tuner[i][j].videodev.name,
+ 		    "AudioScience %4x[%d] Tuner %d",adapter_list[i],i+1,j+1);
+ 	    radio_asihpi_tuner[i][j].videodev.type=VID_TYPE_TUNER;
++#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 26)
+ 	    radio_asihpi_tuner[i][j].videodev.hardware=VID_HARDWARE_ASIHPI;
++#endif
+ 	    radio_asihpi_tuner[i][j].videodev.fops=&radio_asihpi_fops;
+ 
+ #if LINUX_VERSION_CODE >= 0x20500

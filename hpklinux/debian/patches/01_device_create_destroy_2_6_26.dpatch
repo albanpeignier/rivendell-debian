@@ -1,0 +1,37 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 01_device_create_destroy_2_6_26.dpatch by  <alban.peignier@free.fr>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Use device_create/device_destroy for kernel >= 2.6.26
+
+@DPATCH@
+
+diff --git a/drv/hpimod.c b/drv/hpimod.c
+index 9a458c7..43053b9 100644
+--- a/drv/hpimod.c
++++ b/drv/hpimod.c
+@@ -484,7 +484,11 @@ static void hpimod_cleanup(int stage)
+ 	switch (stage) {
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 14)
+ 	case 3:
++#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 26)
+ 		class_device_destroy(asihpi_class, MKDEV(major,0));
++#else
++		device_destroy(asihpi_class, MKDEV(major,0));
++#endif
+ 		class_destroy(asihpi_class);
+ #endif
+ 	case 2:
+@@ -561,7 +565,12 @@ static int __init hpimod_init(void) {
+ 		printk(KERN_ERR "Error creating asihpi class.\n");
+ 		hpimod_cleanup(2);
+ 	} else {
++#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 26)
+ 		class_device_create(asihpi_class, NULL, MKDEV(major, 0), NULL, "asihpi");
++#else
++		device_create(asihpi_class, NULL, MKDEV(major, 0), "asihpi");
++#endif
++
+ 	}
+ #endif
+ 	return 0;

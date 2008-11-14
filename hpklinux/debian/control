@@ -2,7 +2,7 @@ Source: hpklinux
 Section: sound
 Priority: optional
 # FIXME: correct build-depends
-Build-Depends: debhelper (>> 4.0)
+Build-Depends: debhelper (>> 4.0), dpatch
 Maintainer: Alban Peignier <alban.peignier@free.fr>
 Standards-Version: 3.6.2
 

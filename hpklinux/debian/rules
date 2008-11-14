@@ -17,6 +17,7 @@
 
 PACKAGE=hpklinux-module
 psource=hpklinux-source
+include /usr/share/dpatch/dpatch.make
 
 MA_DIR ?= /usr/share/modass
 -include $(MA_DIR)/include/generic.make
@@ -80,7 +81,7 @@ binary-modules: prep-deb-files
 # configure and build of package utilities and libraries.
 
 configure: configure-stamp
-configure-stamp:
+configure-stamp: patch-stamp
 	dh_testdir
 
 	# for the debian package, the kernel module is not compiled.  Instead it is
@@ -109,8 +110,8 @@ build-indep-stamp:
 
 build: build-arch build-indep
 
-
-clean:
+clean: clean-patched unpatch
+clean-patched:
 	dh_testdir
 	dh_testroot
 	rm -f build-arch-stamp build-indep-stamp configure-stamp install-arch-stamp install-indep-stamp debian/hpklinux-utils.init

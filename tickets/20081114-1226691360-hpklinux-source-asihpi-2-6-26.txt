@@ -1,0 +1,6 @@
+Description: hpklinux-source no video_device.hardware for 2.6.26
+Platform: unstable_i386
+
+  CC [M]  /usr/src/modules/hpklinux-module/v4l/asihpi-v4l.o
+/usr/src/modules/hpklinux-module/v4l/asihpi-v4l.c: In function 'init_module':
+/usr/src/modules/hpklinux-module/v4l/asihpi-v4l.c:568: error: 'struct video_device' has no member named 'hardware'
