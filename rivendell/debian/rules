@@ -11,12 +11,19 @@ export QTDIR=/usr/share/qt3
 PACKAGE=rivendell	
 include /usr/share/dpatch/dpatch.make
 
+# 20081113-1226573081-intreprid-pamrd-libpam
+LIBTOOL_VERSION=$(shell dpkg -l libtool | grep libtool | awk '{ print $$3 }')
+ifeq ("$(LIBTOOL_VERSION)", "2.2.4-0ubuntu4")
+CONFIGURE_OPTIONS=--disable-pam
+DH_INSTALL_OPTIONS=--exclude=/lib/security
+endif	
+
 configure: configure-stamp
 configure-stamp: patch-stamp
 	dh_testdir
 
 	[ -x ./autogen.sh ] && ./autogen.sh
-	./configure --libexecdir=/usr/lib/cgi-bin/rivendell/
+	./configure --libexecdir=/usr/lib/cgi-bin/rivendell/ $(CONFIGURE_OPTIONS)
 
 	touch configure-stamp
 
@@ -25,7 +32,7 @@ build-stamp: configure
 	dh_testdir
 
 	# Add here commands to compile the package.
-	$(MAKE)
+	$(MAKE) $(MAKE_BUILD_PARAM)
 
 	touch build-stamp
 
@@ -48,7 +55,7 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/<packagename>
-	$(MAKE) DESTDIR=`pwd`/debian/tmp prefix=/usr install-debian	
+	$(MAKE) DESTDIR=`pwd`/debian/tmp prefix=/usr install-debian
 #	rm -f `pwd`/debian/tmp/usr/bin/toolame
 
 	install -m 644 $(CURDIR)/debian/rdadmin.xpm $(CURDIR)/debian/tmp/usr/share/srlabs
@@ -69,7 +76,7 @@ install: build
 	install -m 644 $(CURDIR)/debian/rdlogin.desktop $(CURDIR)/debian/tmp/usr/share/applications
 	install -m 644 $(CURDIR)/debian/rdlogmanager.desktop $(CURDIR)/debian/tmp/usr/share/applications
 
-	dh_install --sourcedir=debian/tmp --autodest
+	dh_install --sourcedir=debian/tmp --autodest $(DH_INSTALL_OPTIONS)
 
 # Build architecture-independent files here.
 binary-indep: build install
