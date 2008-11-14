@@ -39,6 +39,7 @@ module BuildDirectoryMethods
 end
 
 class PBuilder
+  extend BuildDirectoryMethods
   include HelperMethods
 
   @@default_build_host = nil
@@ -101,14 +102,16 @@ class PBuilder
   private 
 
   def remote_exec(command, *arguments)
-    build_directory = "/var/tmp/rivendell-debian"
-    sh "rsync -av --cvs-exclude --exclude=Rakefile --delete . #{build_host}:#{build_directory}"
+    local_build_directory = PBuilder.build_directory
+    remote_build_directory = "/var/tmp/rivendell-debian"
+
+    sh "rsync -av --cvs-exclude --exclude=Rakefile --delete #{local_build_directory}/ #{build_host}:#{remote_build_directory}/"
 
     quoted_arguments = (options_arguments + arguments).join(' ').gsub("'","\\\\\"")
-    quoted_arguments = quoted_arguments.gsub(File.expand_path('.'), build_directory)
+    quoted_arguments = quoted_arguments.gsub(local_build_directory, remote_build_directory)
 
-    sh "ssh #{build_host} \"cd /var/tmp/rivendell-debian; sudo pbuilder #{command} #{quoted_arguments}\""
-    sh "rsync -av #{build_host}:#{build_directory}/ ."
+    sh "ssh #{build_host} \"cd #{remote_build_directory}; sudo pbuilder #{command} #{quoted_arguments}\""
+    sh "rsync -av #{build_host}:#{remote_build_directory}/ #{local_build_directory}"
   end
 
 end
@@ -316,9 +319,13 @@ class Package < Rake::TaskLib
         Platform.each do |platform|
           desc "Pbuild #{platform} binary package for #{package} #{version}"
           task platform.task_name do |t, args|
-            platform.pbuilder.exec :build, "#{sources_directory}/#{name}_#{debian_version}.dsc"
+            pbuilder_options = {
+              :logfile => "#{platform.build_result_directory}/pbuilder-#{package}-#{debian_version}.log"
+            }
 
-            changes_file = "#{platform.build_result_directory}/#{name}_#{debian_version}_#{platform.architecture}.changes"
+            platform.pbuilder(pbuilder_options).exec :build, "#{sources_directory}/#{package}_#{debian_version}.dsc"
+
+            changes_file = "#{platform.build_result_directory}/#{package}_#{debian_version}_#{platform.architecture}.changes"
             # force target distribution
             sh "sed -i 's/Distribution: .*/Distribution: #{platform.distribution}/' #{changes_file}"
           end
@@ -445,8 +452,6 @@ namespace "package" do
   packages << :rivendell
   Package.new(:rivendell) do |t|
     t.version = '1.1.1'
-    # 20081113-1226573081-intreprid-pamrd-libpam
-    t.exclude_from_build = /intrepid/
   end
 
   packages << :gpio
@@ -516,7 +521,6 @@ namespace :pbuilder do
   desc "Update pbuilder"
   task :update do
     Platform.each do |platform| 
-      next unless platform.pbuilder_enabled?
       platform.pbuilder.exec :update
     end
   end
@@ -524,7 +528,6 @@ namespace :pbuilder do
   desc "Update pbuilder by overriding config"
   task :update_config do
     Platform.each do |platform| 
-      next unless platform.pbuilder_enabled?
       platform.pbuilder("override-config" => true).exec :update  
     end
   end
