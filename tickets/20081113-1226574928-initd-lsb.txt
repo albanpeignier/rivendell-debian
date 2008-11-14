@@ -1,0 +1,5 @@
+Description: init.d missing LSB information
+Plaforms: unstable
+
+update-rc.d: warning: /etc/init.d/rivendell missing LSB information
+update-rc.d: see <http://wiki.debian.org/LSBInitScripts>
