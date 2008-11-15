@@ -1,3 +1,19 @@
+rivendell (1.1.1-1) unstable; urgency=low
+
+  * New upstream release
+  * Patch to fix open arguments in rdconf.cpp (build failed on ubuntu)
+  * Detect libtool 2.2.4-0ubuntu4 and disable pam
+
+ -- Alban Peignier <alban.peignier@free.fr>  Sat, 15 Nov 2008 01:00:59 +0100
+
+rivendell (1.1.0-1) unstable; urgency=low
+
+  * New upstream release
+  * Add amd64 architecture to packages
+  * Replace libjack0.80/100.0-dev build dependency with libjack-dev
+
+ -- Alban Peignier <alban.peignier@free.fr>  Tue, 11 Nov 2008 13:00:53 +0100
+
 rivendell (1.0.0~rc0-1) unstable; urgency=low
 
   * New release.
