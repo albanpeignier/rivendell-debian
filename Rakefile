@@ -105,13 +105,13 @@ class PBuilder
     local_build_directory = PBuilder.build_directory
     remote_build_directory = "/var/tmp/rivendell-debian"
 
-    sh "rsync -av --cvs-exclude --exclude=Rakefile --delete #{local_build_directory}/ #{build_host}:#{remote_build_directory}/"
+    sh "rsync -av --no-owner --no-group --no-perms --cvs-exclude --exclude=Rakefile --delete #{local_build_directory}/ #{build_host}:#{remote_build_directory}/"
 
     quoted_arguments = (options_arguments + arguments).join(' ').gsub("'","\\\\\"")
     quoted_arguments = quoted_arguments.gsub(local_build_directory, remote_build_directory)
 
     sh "ssh #{build_host} \"cd #{remote_build_directory}; sudo pbuilder #{command} #{quoted_arguments}\""
-    sh "rsync -av #{build_host}:#{remote_build_directory}/ #{local_build_directory}"
+    sh "rsync -av --no-owner --no-group --no-perms #{build_host}:#{remote_build_directory}/ #{local_build_directory}"
   end
 
 end
@@ -256,26 +256,50 @@ class Platform
 
 end
 
-class Package < Rake::TaskLib
-  extend BuildDirectoryMethods
+class AbstractPackage < Rake::TaskLib
   include HelperMethods
+  extend BuildDirectoryMethods
+
+  attr_reader :name
+  attr_accessor :package, :exclude_from_build
+
+  def initialize(name)
+    @name = @package = name
+
+    init
+    yield self if block_given?
+    define
+  end
+  
+  def init
+  end
+
+  def default_platforms
+    unless exclude_from_build
+      Platform.all
+    else
+      Platform.all.reject do |platform|
+        platform.to_s.match exclude_from_build
+      end
+    end
+  end
+
+end
+
+class Package < AbstractPackage
 
   attr_reader :name
   attr_accessor :package, :version, :signing_key, :debian_increment, :exclude_from_build
 
-  def initialize(name)
-    @name = @package = name
+  def init
     @debian_increment = 1
-
+    # TODO use a class attribute
     @signing_key = ENV['KEY']
-
-    yield self if block_given?
-    raise "Version must be set" if version.nil?
-
-    define
   end
 
   def define
+    raise "Version must be set" if version.nil?
+
     namespace @name do
       namespace "source" do
         desc "Create source directory for #{package} #{version}"
@@ -364,16 +388,6 @@ class Package < Rake::TaskLib
     end
   end
 
-  def default_platforms
-    unless exclude_from_build
-      Platform.all
-    else
-      Platform.all.reject do |platform|
-        platform.to_s.match exclude_from_build
-      end
-    end
-  end
-
   def sources_directory
     "#{Package.build_directory}/sources"
   end
@@ -438,6 +452,41 @@ class Package < Rake::TaskLib
 
 end
 
+class ModulePackage < AbstractPackage
+
+  def define
+    namespace @name do
+      namespace :pbuild do
+        Platform.each do |platform|
+          desc "Pbuild #{platform} binary package for #{package}"
+          task platform.task_name do |t, args|
+            cp "execute-module-assistant", "#{AbstractPackage.build_directory}/tmp"
+
+            pbuilder_options = {
+              :logfile => "#{platform.build_result_directory}/pbuilder-#{package}.log"
+            }
+
+            platform.pbuilder(pbuilder_options).exec :execute, "-- #{AbstractPackage.build_directory}/tmp/execute-module-assistant gpio #{platform.architecture} #{platform.build_result_directory}"
+          end
+        end
+
+        desc "Pbuild binary package for #{package} (on #{default_platforms.join(', ')})"
+        task :all => default_platforms.collect { |platform| platform.task_name }
+
+      end
+
+      desc "Upload packages for #{package}"
+      task "upload" do
+        Platform.each do |platform|
+          sh "rsync -av #{platform.build_result_directory}/#{package}-*.deb debian.tryphon.org:/var/lib/debarchiver/incoming/#{platform.distribution}"
+        end
+      end
+
+    end
+  end
+
+end
+
 require 'config' if File.exists? 'config.rb'
 
 packages = []
@@ -458,6 +507,9 @@ namespace "package" do
   Package.new(:gpio) do |t|
     t.version = '1.0.0'
   end
+
+  packages << 'gpio-module'.to_sym
+  ModulePackage.new('gpio-module')
 
 end
 
