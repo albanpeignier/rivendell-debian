@@ -144,7 +144,7 @@ class Platform
 
   def self.ubuntu_platforms
     @@ubuntu_platforms ||= 
-      %w{intrepid}.collect do |distribution|
+      %w{hardy intrepid}.collect do |distribution|
       supported_architectures.collect { |architecture| Platform.new(:ubuntu, distribution, architecture) }
     end.flatten
   end
@@ -170,15 +170,6 @@ class Platform
     distribution == :stable
   end
 
-  def local_architecture?
-    case architecture
-    when 'amd64'
-      PLATFORM == "x86_64-linux"
-    when 'i386'
-      PLATFORM == "i486-linux"
-    end
-  end
-
   def pbuilder_base_file
     "/var/cache/pbuilder/base-#{distribution}-#{architecture}.tgz"
   end
@@ -195,13 +186,11 @@ class Platform
       p[:distribution] = distribution
       p[:hookdir] = default_hooks_directory
 
-      unless local_architecture?
-        # to use i386 on amd64 architecture
-        p[:debootstrapopts] ||= []
-        p[:debootstrapopts] << "--arch=#{architecture}"
-
-        p[:debbuildopts] = "-a#{architecture}"
-      end
+      # to use i386 on amd64 architecture
+      p[:debootstrapopts] ||= []
+      p[:debootstrapopts] << "--arch=#{architecture}"
+      
+      p[:debbuildopts] = "-a#{architecture}"
 
       p[:mirror] = mirror
 
@@ -454,6 +443,10 @@ end
 
 class ModulePackage < AbstractPackage
 
+  def module_name
+    package.gsub(/-module$/,'')
+  end
+
   def define
     namespace @name do
       namespace :pbuild do
@@ -466,7 +459,7 @@ class ModulePackage < AbstractPackage
               :logfile => "#{platform.build_result_directory}/pbuilder-#{package}.log"
             }
 
-            platform.pbuilder(pbuilder_options).exec :execute, "-- #{AbstractPackage.build_directory}/tmp/execute-module-assistant gpio #{platform.architecture} #{platform.build_result_directory}"
+            platform.pbuilder(pbuilder_options).exec :execute, "-- #{AbstractPackage.build_directory}/tmp/execute-module-assistant #{module_name} #{platform.architecture} #{platform.build_result_directory}"
           end
         end
 
@@ -510,6 +503,9 @@ namespace "package" do
 
   packages << 'gpio-module'.to_sym
   ModulePackage.new('gpio-module')
+
+  packages << 'hpklinux-module'.to_sym
+  ModulePackage.new('hpklinux-module')
 
 end
 
