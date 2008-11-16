@@ -1,0 +1,33 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 01_explicit_uname_makefile_26.dpatch by  <alban.peignier@free.fr>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Replace uname by KERNEL in Makefile-2.6
+
+@DPATCH@
+
+diff --git a/drv/Makefile-2.6.in b/drv/Makefile-2.6.in
+index 61abf6f..9a51e3a 100644
+--- a/drv/Makefile-2.6.in
++++ b/drv/Makefile-2.6.in
+@@ -24,16 +24,16 @@ ifneq ($(KERNELRELEASE),)
+ obj-m	:= gpio.o
+ 
+ else
+-KDIR	:= /lib/modules/$(shell uname -r)/build
++KVERS := $(shell uname -r)
++KSRC  := /lib/modules/$(KVERS)/build
+ PWD	:= $(shell pwd)
+-
+ endif
+ 
+ all:
+-	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
++	$(MAKE) -C $(KSRC) SUBDIRS=$(PWD) modules
+ 
+ install:	
+-	cp gpio.ko /lib/modules/`uname -r`/kernel/drivers/char/
++	cp gpio.ko /lib/modules/$(KVERS)/kernel/drivers/char/
+ 	cp gpio.h $(INCLUDE_DIR)/
+ 
+ clean:	
