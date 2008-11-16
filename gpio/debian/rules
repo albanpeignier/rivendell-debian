@@ -11,6 +11,8 @@
 PACKAGE=gpio-module
 psource=gpio-source
 
+-include /usr/share/dpatch/dpatch.make
+
 MA_DIR ?= /usr/share/modass
 -include $(MA_DIR)/include/generic.make
 -include $(MA_DIR)/include/common-rules.make
@@ -64,12 +66,18 @@ binary-modules: prep-deb-files
 	dh_md5sums
 	dh_builddeb --destdir=$(DEB_DESTDIR)
 
+configure: configure-stamp
+configure-stamp: patch-stamp
+	dh_testdir
+
 # Here we do not have to build
 build: 
 
-clean:
+clean: clean-patched unpatch
+clean-patched:
 	dh_testdir
 	dh_testroot
+	rm -rf configure-stamp
 
 	# Add here commands to clean up after the build process.
 
@@ -81,17 +89,17 @@ install-indep:
 	dh_testroot
 	dh_clean -k -i 
 	dh_installdirs -i    
-	
+
 	[ -x configure ] && ./configure   
 
 	# Copy only the driver source to the proper location
 	mkdir -p debian/$(psource)/usr/src/modules/gpio/driver
 	cp drv/Makefile-2.6 debian/$(psource)/usr/src/modules/gpio/driver/Makefile
 	cp drv/gpio.c drv/gpio.h debian/$(psource)/usr/src/modules/gpio/driver/
-	
+
 	mkdir -p debian/gpio-kernel-headers/usr/include/linux
 	cp drv/gpio.h debian/gpio-kernel-headers/usr/include/linux/
-	
+
 	# Copy the needed debian/ pieces to the proper location
 	mkdir -p debian/$(psource)/usr/src/modules/gpio/debian
 	cd debian ; cp changelog control compat *.modules.in rules copyright \
@@ -117,7 +125,7 @@ binary-common:
 	dh_builddeb
 
 # Build architecture independant packages using the common target.
-binary-indep: install-indep
+binary-indep: configure-stamp install-indep
 	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-common
 
 

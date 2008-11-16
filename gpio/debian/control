@@ -1,7 +1,7 @@
 Source: gpio
 Section: contrib/sound
 Priority: optional
-Build-Depends: debhelper (>> 4.0)
+Build-Depends: debhelper (>> 4.0), dpatch
 Maintainer: Alban Peignier <alban.peignier@free.fr>
 Standards-Version: 3.6.2.0
 
