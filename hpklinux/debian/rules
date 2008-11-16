@@ -17,7 +17,7 @@
 
 PACKAGE=hpklinux-module
 psource=hpklinux-source
-include /usr/share/dpatch/dpatch.make
+-include /usr/share/dpatch/dpatch.make
 
 MA_DIR ?= /usr/share/modass
 -include $(MA_DIR)/include/generic.make

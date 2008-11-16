@@ -1,0 +1,37 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 03_explicit_uname_drv_makefile.dpatch by  <alban.peignier@free.fr>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Replace uname by KVERS in drv/Makefile
+
+@DPATCH@
+
+diff --git a/drv/Makefile.auto.am b/drv/Makefile.auto.am
+index a08f643..c51767b 100644
+--- a/drv/Makefile.auto.am
++++ b/drv/Makefile.auto.am
+@@ -20,6 +20,7 @@
+ ## Use automake to process this into a Makefile.in
+ ##
+ 
++KVERS := $(shell uname -r)
+ INSTALLINITPATH = /etc/init.d
+ 
+ if KERNEL_26
+@@ -51,14 +52,14 @@ CFLAGS += -D_LOOSE_KERNEL_NAMES -D__KERNEL__ -DMODULE=1 @MODVERSIONS@\
+     -DDRIVER_VERSION=@VERSION@ @HPI_64BIT@
+ 
+ 
+-INSTALLMODPATH = /lib/modules/`uname -r`/kernel/drivers/sound/
++INSTALLMODPATH = /lib/modules/$(KVERS)/kernel/drivers/sound/
+ 
+ HPI_DIR	= $(top_srcdir)/drv
+ HPI_OBJS = hpicmn.o hpifunc.o hpidebug.o hpidspcd.o \
+ 	   hpios_linux_kernel.o hpi4000.o hpi6000.o hpi56301.o hpi6205.o  hpimsgx.o
+ 
+ OBJS = hpimod.o $(HPI_OBJS)
+-#INCLUDES = -I/lib/modules/`uname -r`/build/include -I$(HPI_DIR)
++#INCLUDES = -I/lib/modules/$(KVERS)/build/include -I$(HPI_DIR)
+ INCLUDES = -I@CONFIG_HPI_KERNELDIR@/include -I$(HPI_DIR)
+ 
+ DRIVER_BINARY = asihpi.o  # For gzipped driver change to  asihpi.o.gz
