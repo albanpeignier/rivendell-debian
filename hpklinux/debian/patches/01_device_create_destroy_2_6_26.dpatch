@@ -7,7 +7,7 @@
 @DPATCH@
 
 diff --git a/drv/hpimod.c b/drv/hpimod.c
-index 9a458c7..bba887e 100644
+index 9a458c7..4cd14a5 100644
 --- a/drv/hpimod.c
 +++ b/drv/hpimod.c
 @@ -484,7 +484,11 @@ static void hpimod_cleanup(int stage)
@@ -27,7 +27,7 @@ index 9a458c7..bba887e 100644
  		hpimod_cleanup(2);
  	} else {
 +#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27)
-+		device_create_drvdata(asihpi_class, NULL, MKDEV(major, 0), NULL, "asihpi");
++		device_create(asihpi_class, NULL, MKDEV(major, 0), NULL, "asihpi");
 +#elif LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 26)
 +		device_create(asihpi_class, NULL, MKDEV(major, 0), "asihpi");
 +#else
