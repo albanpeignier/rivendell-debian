@@ -2,12 +2,12 @@
 ## 02_video_device_2_6_26_27.dpatch by  <alban.peignier@free.fr>
 ##
 ## All lines beginning with `## DP:' are a description of the patch.
-## DP: Skip video_device obsolete fields for kernel >= 2.6.26 and 27
+## DP: Skip video_device obsolete fields for kernel >= 2.6.24
 
 @DPATCH@
 
 diff --git a/v4l/asihpi-v4l.c b/v4l/asihpi-v4l.c
-index d11a9b7..a3b07f1 100644
+index d11a9b7..2bb802e 100644
 --- a/v4l/asihpi-v4l.c
 +++ b/v4l/asihpi-v4l.c
 @@ -561,11 +561,17 @@ int init_module(void)
@@ -22,7 +22,7 @@ index d11a9b7..a3b07f1 100644
 +#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 27)
  	    radio_asihpi_tuner[i][j].videodev.type=VID_TYPE_TUNER;
 +#endif
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 26)
++#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 24)
  	    radio_asihpi_tuner[i][j].videodev.hardware=VID_HARDWARE_ASIHPI;
 +#endif
  	    radio_asihpi_tuner[i][j].videodev.fops=&radio_asihpi_fops;
