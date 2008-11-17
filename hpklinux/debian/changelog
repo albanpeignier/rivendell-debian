@@ -2,7 +2,7 @@ hpklinux (3.08.05-1) unstable; urgency=low
 
   * New upstream release
   * Replace all architecture by i386 and amd64
-  * Fixe hpklinux-source compilation under kernel 2.6.26
+  * Fixe hpklinux-source compilation under kernel 2.6.26 and 27
 
  -- Alban Peignier <alban.peignier@free.fr>  Sat, 15 Nov 2008 01:03:50 +0100
 

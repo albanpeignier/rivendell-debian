@@ -1,20 +1,28 @@
 #! /bin/sh /usr/share/dpatch/dpatch-run
-## 02_videodev_hardware_2_6_26.dpatch by  <alban.peignier@free.fr>
+## 02_video_device_2_6_26_27.dpatch by  <alban.peignier@free.fr>
 ##
 ## All lines beginning with `## DP:' are a description of the patch.
-## DP: Skip videoved.harware for kernel >= 2.6.26
+## DP: Skip video_device obsolete fields for kernel >= 2.6.26 and 27
 
 @DPATCH@
 
 diff --git a/v4l/asihpi-v4l.c b/v4l/asihpi-v4l.c
-index d11a9b7..e4d19e1 100644
+index d11a9b7..a3b07f1 100644
 --- a/v4l/asihpi-v4l.c
 +++ b/v4l/asihpi-v4l.c
-@@ -565,7 +565,9 @@ int init_module(void)
+@@ -561,11 +561,17 @@ int init_module(void)
+ 	      }
+ 	      k++;
+ 	    }
++#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 27)
+ 	    radio_asihpi_tuner[i][j].videodev.owner=THIS_MODULE;
++#endif
  	    sprintf(radio_asihpi_tuner[i][j].videodev.name,
  		    "AudioScience %4x[%d] Tuner %d",adapter_list[i],i+1,j+1);
++#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 27)
  	    radio_asihpi_tuner[i][j].videodev.type=VID_TYPE_TUNER;
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 24)
++#endif
++#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 26)
  	    radio_asihpi_tuner[i][j].videodev.hardware=VID_HARDWARE_ASIHPI;
 +#endif
  	    radio_asihpi_tuner[i][j].videodev.fops=&radio_asihpi_fops;
