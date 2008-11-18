@@ -9,8 +9,8 @@ Package: rivendell
 Architecture: i386 amd64
 Depends: ${shlibs:Depends}, bc, cdda2wav, cdparanoia, flac, lame, libqt3-mt-mysql | libqt3c102-mt-mysql, mpg321, sox, vorbis-tools
 Recommends: jackd, logrotate
-Description: Rivendell binaries - contains a full set of functionality needed to operate a radio
- automation system, consisting of the following components:
+Description: contains a full set of functionality needed to operate a radio automation system
+ It consisting of the following components:
  .
  RDAdmin: a comprehensive application for the administration and configuration
  of Rivendell.
