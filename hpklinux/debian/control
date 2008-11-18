@@ -26,6 +26,7 @@ Description: source for the hpklinux driver
 
 Package: hpklinux-utils
 Architecture: i386 amd64
+Depends: python
 Description: firmware and loading utils for hpklinux driver
  This package provides the firmware and loading utilities for the hpklinux
  driver to control AudioScience cards.
