@@ -1,5 +1,5 @@
 Source: gpio
-Section: contrib/sound
+Section: sound
 Priority: optional
 Maintainer: Alban Peignier <alban.peignier@free.fr>
 Build-Depends: debhelper (>> 4.0.0)
