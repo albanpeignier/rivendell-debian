@@ -75,6 +75,8 @@ install: build
 	install -m 644 $(CURDIR)/debian/rdlogedit.desktop $(CURDIR)/debian/tmp/usr/share/applications
 	install -m 644 $(CURDIR)/debian/rdlogin.desktop $(CURDIR)/debian/tmp/usr/share/applications
 	install -m 644 $(CURDIR)/debian/rdlogmanager.desktop $(CURDIR)/debian/tmp/usr/share/applications
+	install -m 644 $(CURDIR)/debian/rdpanel.desktop $(CURDIR)/debian/tmp/usr/share/applications
+	install -m 644 $(CURDIR)/debian/rdcastmanager.desktop $(CURDIR)/debian/tmp/usr/share/applications
 
 	dh_install --sourcedir=debian/tmp --autodest $(DH_INSTALL_OPTIONS)
 

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=rdpanel
+Comment=Rivendell Standalone Soundpanel
+Exec=rdpanel
+Terminal=false
+Type=Application
+Icon=/usr/share/rivendell/rivendell.xpm
+Categories=Application;AudioVideo;
