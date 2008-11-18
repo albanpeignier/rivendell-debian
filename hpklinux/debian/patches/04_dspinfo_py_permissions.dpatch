@@ -1,0 +1,21 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 04_dspinfo_py_permissions.dpatch by  <alban.peignier@free.fr>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Replace permissions 655 by 755
+
+@DPATCH@
+
+diff --git a/firmware/Makefile.am b/firmware/Makefile.am
+index 63023a9..ac3a4d6 100644
+--- a/firmware/Makefile.am
++++ b/firmware/Makefile.am
+@@ -27,7 +27,7 @@ EXTRA_DIST = $(srcdir)/dsp*.bin $(srcdir)/dspinfo.py
+ install:
+ 	-install -d  $(INSTALLFIRMWAREPATH)
+ 	-install -m 0444 $(srcdir)/dsp*.bin  $(INSTALLFIRMWAREPATH)
+-	-install -m 0655 $(srcdir)/dspinfo.py  $(INSTALLFIRMWAREPATH)
++	-install -m 0755 $(srcdir)/dspinfo.py  $(INSTALLFIRMWAREPATH)
+ 
+ uninstall:
+ 	rm $(INSTALLFIRMWAREPATH)/dsp*.bin
