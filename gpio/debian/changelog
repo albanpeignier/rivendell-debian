@@ -1,4 +1,4 @@
-gpio (1.0.0-2) unstable; urgency=low
+gpio (1.0.0-2) UNRELEASED; urgency=low
 
   * Change package section to sound
 

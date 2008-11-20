@@ -1,4 +1,4 @@
-rivendell (1.1.1-2) unstable; urgency=low
+rivendell (1.1.1-2) UNRELEASED; urgency=low
 
   * Recommends gpio-module and hpklinux-utils (FrederickJH's suggestion)
   * Add rdcastmanager.desktop and rdpanel.desktop (proposed by Stefan Gabriel)
