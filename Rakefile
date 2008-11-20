@@ -116,37 +116,36 @@ class PBuilder
 
 end
 
-class Platform
+class Distribution
   extend BuildDirectoryMethods
 
-  attr_reader :flavor, :distribution, :architecture
+  attr_reader :flavor, :distribution
 
-  def initialize(flavor, distribution, architecture)
+  def initialize(flavor, distribution)
     @flavor = flavor
     @distribution = distribution.to_sym
-    @architecture = architecture
-  end
-
-  def self.supported_architectures
-    %w{i386 amd64}
   end
 
   def self.all
-    @@all ||= debian_platforms + ubuntu_platforms
+    @@all ||= debian_distributions + ubuntu_distributions
   end
 
-  def self.debian_platforms
-    @@debian_platforms ||= 
-      %w{stable testing unstable}.collect do |distribution|
-      supported_architectures.collect { |architecture| Platform.new(:debian, distribution, architecture) }
-    end.flatten
+  def self.each(&block)
+    all.each &block
   end
 
-  def self.ubuntu_platforms
-    @@ubuntu_platforms ||= 
-      %w{hardy intrepid}.collect do |distribution|
-      supported_architectures.collect { |architecture| Platform.new(:ubuntu, distribution, architecture) }
-    end.flatten
+  def self.debian_distributions
+    @@debian_distributions ||= 
+      %w{stable testing unstable}.collect { |distribution| Distribution.new(:debian, distribution) }
+  end
+
+  def self.ubuntu_distributions
+    @@ubuntu_distributions ||= 
+      %w{hardy intrepid}.collect { |distribution| Distribution.new(:ubuntu, distribution) }
+  end
+
+  def source_result_directory
+    File.expand_path "#{Platform.build_directory}/sources/#{distribution}"
   end
 
   def mirror
@@ -158,16 +157,65 @@ class Platform
     end
   end
 
+  def ubuntu?
+    flavor == :ubuntu
+  end
+
+  def unstable?
+    [ :unstable, :intrepid ].include? distribution
+  end
+  
+  @@local_names = { :stable => 'etch', :testing => 'lenny', :intrepid => 'ubuntu', :hardy => 'hardy' }
+  def local_name
+    @@local_names[distribution]
+  end
+
+  def to_s
+    distribution.to_s
+  end
+
+  def task_name
+    to_s
+  end
+
+end
+
+class Platform
+  extend BuildDirectoryMethods
+
+  attr_reader :architecture
+
+  def method_missing(method, *args, &block)
+    if @distribution.respond_to? method
+      @distribution.send method, *args
+    else
+      super
+    end
+  end
+
+
+  def initialize(distribution, architecture)
+    @distribution = distribution
+    @architecture = architecture
+  end
+
+  def self.supported_architectures
+    %w{i386 amd64}
+  end
+
+  def self.all
+    @@all ||= 
+      Distribution.all.collect do |distribution|
+      supported_architectures.collect { |architecture| Platform.new(distribution, architecture) }
+    end.flatten
+  end
+
   def self.each(&block)
     all.each &block
   end
 
   def build_result_directory
     File.expand_path "#{Platform.build_directory}/binaries/#{distribution}/#{architecture}"
-  end
-
-  def stable?
-    distribution == :stable
   end
 
   def pbuilder_base_file
@@ -187,10 +235,8 @@ class Platform
       p[:hookdir] = default_hooks_directory
 
       # to use i386 on amd64 architecture
-      p[:debootstrapopts] ||= []
-      p[:debootstrapopts] << "--arch=#{architecture}"
-      
-      p[:debbuildopts] = "-a#{architecture}"
+      p[:debootstrapopts] = [ "--arch=#{architecture}" ]
+      p[:debbuildopts] = [ "-a#{architecture}", '-b' ]
 
       p[:mirror] = mirror
 
@@ -303,29 +349,57 @@ class Package < AbstractPackage
         task "directory" => "tarball" do
           Dir.chdir(sources_directory) do
             uncompress source_tarball_name
+
+            if source_tarball_name.match /bz2$/ 
+              sh "bunzip2 -c #{source_tarball_name} | gzip -c > #{orig_source_tarball_name}" unless File.exists?(orig_source_tarball_name)
+            else
+              sh "ln -fs #{source_tarball_name} #{orig_source_tarball_name}"
+            end
           end
 
-          rm_rf "#{source_directory}/debian"
-          cp_r "#{package}/debian", "#{source_directory}/debian"
+          copy_debian_files
         end
-      end
 
-      desc "Build source package for #{package} #{version}"
-      task "source" => "source:directory" do
-        Dir.chdir(sources_directory) do  
-          sh "ln -fs #{source_tarball_name} #{orig_source_tarball_name}"
-        end
-        Dir.chdir(source_directory) do  
-          sh "dch --newversion #{debian_version} 'New upstream version' || true"
+        Distribution.each do |distribution|
+          desc "Build source package for #{package} #{version} on #{distribution}"
+          task distribution.task_name => :directory do
+            copy_debian_files
 
-          signing_options =
-            if signing_key
-              "-k#{signing_key}"
-            else
-              "-us -uc"
+            dch_options="--preserve --force-distribution"
+            Dir.chdir(source_directory) do  
+              unless distribution.ubuntu?
+                if distribution.unstable?
+                  sh "dch #{dch_options} --release ''"              
+                else
+                  sh "dch #{dch_options} --local #{distribution.local_name} --distribution #{distribution} 'Release from unstable'"              
+                end
+              else
+                if distribution.unstable?
+                  sh "dch #{dch_options} --local ubuntu --distribution #{distribution} 'Release from debian/unstable'"
+                else
+                  sh "dch #{dch_options} --local #{distribution.local_name} --distribution #{distribution} 'Release from unstable'"              
+                end
+              end
+
+              dpkg_buildpackage_options = []
+
+              if signing_key
+                dpkg_buildpackage_options << "-k#{signing_key}"
+              else
+                dpkg_buildpackage_options << "-us -uc"
+              end
+
+              if ENV['ORIGINAL_SOURCE']
+                dpkg_buildpackage_options << "-sa"
+              end
+
+              sh "dpkg-buildpackage -rfakeroot #{dpkg_buildpackage_options.join(' ')} -S"
             end
-          sh "dpkg-buildpackage -rfakeroot #{signing_options} -S"
+          end
         end
+        
+        desc "Build source packages for #{package} #{version}"
+        task :all => Distribution.all.collect { |distribution| distribution.task_name }
       end
 
       namespace :pbuild do
@@ -335,12 +409,7 @@ class Package < AbstractPackage
             pbuilder_options = {
               :logfile => "#{platform.build_result_directory}/pbuilder-#{package}-#{debian_version}.log"
             }
-
-            platform.pbuilder(pbuilder_options).exec :build, "#{sources_directory}/#{package}_#{debian_version}.dsc"
-
-            changes_file = "#{platform.build_result_directory}/#{package}_#{debian_version}_#{platform.architecture}.changes"
-            # force target distribution
-            sh "sed -i 's/Distribution: .*/Distribution: #{platform.distribution}/' #{changes_file}"
+            platform.pbuilder(pbuilder_options).exec :build, dsc_file(platform)
           end
         end
 
@@ -351,15 +420,22 @@ class Package < AbstractPackage
 
       desc "Upload packages for #{package} #{version}"
       task "upload" do
-#         changes_files = "#{package}_#{debian_version}*.changes"
-#         sh "dupload -t tryphon #{changes_files}"
-#         sh "scp #{package_files("build").join(' ')} debian.tryphon.org:/var/lib/debarchiver/incoming/experimental"
+        changes_files = Dir.glob("#{sources_directory}/#{package}_#{debian_version}*_source.changes")
+
         Platform.each do |platform|
-          deb_files = package_deb_files(platform.build_result_directory)
-          unless deb_files.empty?
-            sh "rsync -av #{deb_files.join(' ')} debian.tryphon.org:/var/lib/debarchiver/incoming/#{platform.distribution}"
+          platform_changes_files = Dir.glob("#{platform.build_result_directory}/#{package}_#{debian_version}*_#{platform.architecture}.changes")
+
+          unless platform_changes_files.empty?
+            # deb packages for architect all shouldn't be uploaded twice
+            sh "sed -i '/_all.deb/ d' #{platform_changes_files.join(' ')}" if platform.architecture != 'i386'
+
+            changes_files << platform_changes_files
           end
         end
+
+        changes_files.flatten!
+
+        sh "dupload -t tryphon #{changes_files.join(' ')}"
       end
 
       desc "Clean files created for #{package} #{version}"
@@ -375,6 +451,21 @@ class Package < AbstractPackage
         rm_rf "#{source_directory}"
       end
     end
+  end
+
+  def dsc_file(platform)
+    suffix = 
+      if local_name = platform.local_name
+        "#{local_name}1"
+      else
+        ""
+      end
+    File.expand_path "#{Package.build_directory}/sources/#{package}_#{debian_version}#{suffix}.dsc"
+  end
+
+  def copy_debian_files
+    rm_rf "#{source_directory}/debian"
+    cp_r "#{package}/debian", "#{source_directory}/debian"
   end
 
   def sources_directory
@@ -394,7 +485,7 @@ class Package < AbstractPackage
 
   def source_tarball_name
     case package
-    when :rivendell 
+    when :rivendell
       "rivendell-#{version}.tar.gz"
     when :hpklinux 
       "hpklinux-#{version}.tar.bz2"
@@ -404,7 +495,7 @@ class Package < AbstractPackage
   end
 
   def orig_source_tarball_name
-    source_tarball_name.gsub "#{version}.tar","#{version}.orig.tar"
+    "#{package}_#{version}.orig.tar.gz"
   end
 
   def source_directory
@@ -475,6 +566,11 @@ class ModulePackage < AbstractPackage
         end
       end
 
+      # TODO : remove this mock
+      namespace :source do 
+        task :all 
+      end
+
     end
   end
 
@@ -489,16 +585,20 @@ namespace "package" do
   packages << :hpklinux
   Package.new(:hpklinux) do |t|
     t.version = '3.08.05'
+    t.debian_increment = 2
   end
   
   packages << :rivendell
   Package.new(:rivendell) do |t|
     t.version = '1.1.1'
+    t.debian_increment = 2
+    t.exclude_from_build = /unstable/
   end
 
   packages << :gpio
   Package.new(:gpio) do |t|
     t.version = '1.0.0'
+    t.debian_increment = 2
   end
 
   packages << 'gpio-module'.to_sym
@@ -522,10 +622,21 @@ namespace "packages" do
   task :upload
 
   packages.each do |package|
-    task :sources => "package:#{package}:source"
+    task :sources => "package:#{package}:source:all"
     task :binaries => "package:#{package}:pbuild:all"
-    task :upload => "package:#{package}:upload"
     task :clean => "package:#{package}:clean"
+  end
+
+  task :upload do
+    lock_file = "/var/lib/debarchiver/incoming/debarchiver.lock"
+    begin
+      sh "ssh debian.tryphon.org touch #{lock_file}"
+      packages.each do |package|
+        Rake::Task["package:#{package}:upload"].invoke
+      end
+    ensure
+      sh "ssh debian.tryphon.org rm -f #{lock_file}"
+    end
   end
   
 end
