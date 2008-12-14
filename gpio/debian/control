@@ -11,7 +11,7 @@ Depends: module-assistant, ${misc:Depends}, debhelper (>> 4.0)
 Suggests: fakeroot
 Description: source for the gpio driver
  This package provides the source code for the gpio kernel module,
- a linux kernel driver for the line of general purpose input/output 
+ a Linux kernel driver for the line of general purpose input/output 
  (GPIO) data acquisition boards made by MeasurementComputing 
  (http://www.measurementcomputing.com).
  .
@@ -34,7 +34,7 @@ Description: source for the gpio driver
 Package: gpio-kernel-headers
 Architecture: all
 Description: Header files for the gpio driver
- The gpio module provides a linux kernel driver for the line of 
+ The gpio module provides a Linux kernel driver for the line of 
  general purpose input/output (GPIO) data acquisition boards made 
  by MeasurementComputing (http://www.measurementcomputing.com).
  .

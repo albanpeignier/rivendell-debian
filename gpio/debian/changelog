@@ -1,6 +1,7 @@
 gpio (1.0.0-2) UNRELEASED; urgency=low
 
   * Change package section to sound
+  * Fix typos in debian control files
 
  -- Alban Peignier <alban.peignier@free.fr>  Tue, 18 Nov 2008 09:32:40 +0100
 
