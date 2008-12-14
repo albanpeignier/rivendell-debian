@@ -2,6 +2,7 @@ rivendell (1.1.1-2) UNRELEASED; urgency=low
 
   * Recommends gpio-module and hpklinux-utils (FrederickJH's suggestion)
   * Add rdcastmanager.desktop and rdpanel.desktop (proposed by Stefan Gabriel)
+  * Add a dependency with libsox-fmt-all (FrederickJH's suggestion)
 
  -- Alban Peignier <alban.peignier@free.fr>  Mon, 17 Nov 2008 17:32:55 +0100
 
