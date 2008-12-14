@@ -19,3 +19,16 @@ index 63023a9..ac3a4d6 100644
  
  uninstall:
  	rm $(INSTALLFIRMWAREPATH)/dsp*.bin
+diff --git a/firmware/Makefile.in b/firmware/Makefile.in
+index d8970d7..4389eaf 100644
+--- a/firmware/Makefile.in
++++ b/firmware/Makefile.in
+@@ -342,7 +342,7 @@ uninstall-am: uninstall-info-am
+ install:
+ 	-install -d  $(INSTALLFIRMWAREPATH)
+ 	-install -m 0444 $(srcdir)/dsp*.bin  $(INSTALLFIRMWAREPATH)
+-	-install -m 0655 $(srcdir)/dspinfo.py  $(INSTALLFIRMWAREPATH)
++	-install -m 0755 $(srcdir)/dspinfo.py  $(INSTALLFIRMWAREPATH)
+ 
+ uninstall:
+ 	rm $(INSTALLFIRMWAREPATH)/dsp*.bin
