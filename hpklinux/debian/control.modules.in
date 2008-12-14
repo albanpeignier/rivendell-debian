@@ -9,8 +9,8 @@ Package: hpklinux-module-_KVERS_
 Architecture: any
 Provides: hpklinux-module
 Depends: hpklinux-utils, kernel-image-_KVERS_ | linux-image-_KVERS_
-Description: hpklinux module for linux (kernel _KVERS_)
- This package contains the kernel module for the linux kernel driver to allow
+Description: hpklinux module for Linux (kernel _KVERS_)
+ This package contains the kernel module for the Linux kernel driver to allow
  AudioScience cards to be controlled using the HPI API.  This API is documented
  in http://www.audioscience.com/internet/download/spchpi.pdf
  .

@@ -8,11 +8,11 @@ Standards-Version: 3.6.2
 
 Package: hpklinux-source
 Architecture: all
-Depends: module-assistant, ${misc:Depends}, debhelper (>> 4.0)
+Depends: module-assistant, ${shlibs:Depends}, ${misc:depends}, debhelper (>> 4.0)
 Suggests: fakeroot
 Description: source for the hpklinux driver
  This package provides the source code for the hpklinux kernel module,
- a linux kernel driver to allow AudioScience cards to be controlled using the
+ a Linux kernel driver to allow AudioScience cards to be controlled using the
  HPI API.  This API is documented in
  http://www.audioscience.com/internet/download/spchpi.pdf
  .
@@ -26,26 +26,28 @@ Description: source for the hpklinux driver
 
 Package: hpklinux-utils
 Architecture: i386 amd64
-Depends: python
+Depends: python, ${shlibs:Depends}, ${misc:depends}
 Description: firmware and loading utils for hpklinux driver
  This package provides the firmware and loading utilities for the hpklinux
  driver to control AudioScience cards.
 
 Package: libhpi
 Architecture: i386 amd64
+Depends: ${shlibs:Depends}, ${misc:depends}
 Description: libraries for the hpklinux driver
  This package provides the shared libraries for the hpklinux drvier driver to
  control AudioScience cards.
 
 Package: libhpiudp
 Architecture: i386 amd64
+Depends: ${shlibs:Depends}, ${misc:depends}
 Description: libraries for network HPI
  This package provides the shared libraries for network
  control of AudioScience networked adapters.
 
 Package: libhpi-dev
 Architecture: i386 amd64
-Depends: libhpi (= ${Source-Version})
+Depends: libhpi (= ${Source-Version}), ${shlibs:Depends}, ${misc:depends}
 Description: libraries for the hpklinux driver
  This package provides the shared libraries for the hpklinux drvier driver to
  control AudioScience cards.
