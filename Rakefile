@@ -590,9 +590,8 @@ namespace "package" do
   
   packages << :rivendell
   Package.new(:rivendell) do |t|
-    t.version = '1.1.1'
-    t.debian_increment = 2
-    t.exclude_from_build = /unstable/
+    t.version = '1.2.0'
+    t.debian_increment = 1
   end
 
   packages << :gpio

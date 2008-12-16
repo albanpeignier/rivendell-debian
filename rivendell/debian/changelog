@@ -1,10 +1,17 @@
-rivendell (1.1.1-2) UNRELEASED; urgency=low
+rivendell (1.2.0-1) UNRELEASED; urgency=low
+
+  * New upstream release
+  * Remove dpatch 08_rdconf_open_arguments (fixed in upstream)
+
+ -- Alban Peignier <alban.peignier@free.fr>  Sun, 4 Dec 2008 12:30:12 +0100
+
+rivendell (1.1.1-2) unstable; urgency=low
 
   * Recommends gpio-module and hpklinux-utils (FrederickJH's suggestion)
   * Add rdcastmanager.desktop and rdpanel.desktop (proposed by Stefan Gabriel)
   * Add a dependency with libsox-fmt-all (FrederickJH's suggestion)
 
- -- Alban Peignier <alban.peignier@free.fr>  Mon, 17 Nov 2008 17:32:55 +0100
+ -- Alban Peignier <alban.peignier@free.fr>  Thu, 27 Nov 2008 23:51:26 +0100
 
 rivendell (1.1.1-1) unstable; urgency=low
 
