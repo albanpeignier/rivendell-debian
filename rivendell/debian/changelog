@@ -1,4 +1,16 @@
-rivendell (1.2.0-1) UNRELEASED; urgency=low
+rivendell (1.2.2-1) UNRELEASED; urgency=low
+
+  * New upstream release
+
+ -- Alban Peignier <alban.peignier@free.fr>  Tue, 14 Jan 2009 14:44:12 +0100
+
+rivendell (1.2.1-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Alban Peignier <alban.peignier@free.fr>  Tue, 13 Jan 2009 21:05:11 +0100
+
+rivendell (1.2.0-1) unstable; urgency=low
 
   * New upstream release
   * Remove dpatch 08_rdconf_open_arguments (fixed in upstream)

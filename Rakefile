@@ -590,7 +590,7 @@ namespace "package" do
   
   packages << :rivendell
   Package.new(:rivendell) do |t|
-    t.version = '1.2.0'
+    t.version = '1.2.2'
     t.debian_increment = 1
   end
 
