@@ -1,0 +1,20 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 10_rdpopup-include-stdlib.dpatch by  <alban.peignier@free.fr>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: include stdlib in rdpopup
+
+@DPATCH@
+
+diff --git a/utils/rdpopup/rdpopup.cpp b/utils/rdpopup/rdpopup.cpp
+index cf4e0c5..5dd2a59 100644
+--- a/utils/rdpopup/rdpopup.cpp
++++ b/utils/rdpopup/rdpopup.cpp
+@@ -20,6 +20,7 @@
+ //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ //
+ 
++#include <stdlib.h>
+ #include <syslog.h>
+ 
+ #include <qapplication.h>
