@@ -1,4 +1,10 @@
-rivendell (1.3.0-1) UNRELEASED; urgency=low
+rivendell (1.3.0-2) UNRELEASED; urgency=low
+
+  * Add lftp in Recommends (Samuel's suggestion)
+
+ -- Alban Peignier <alban.peignier@free.fr>  Sat, 11 Apr 2009 12:07:52 +0200
+
+rivendell (1.3.0-1) unstable; urgency=low
 
   * New upstream release
 
