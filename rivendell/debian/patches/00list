@@ -3,3 +3,4 @@
 # Brief summary is to uncomment patches to be applied in this file.
 
 
+10_rdpopup-include-stdlib
