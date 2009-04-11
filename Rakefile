@@ -26,14 +26,14 @@ end
 
 module BuildDirectoryMethods
 
-  @@build_directory = '/var/tmp/rivendell-debian'
+  @@build_directory = '/var/tmp/debian'
 
   def build_directory=(directory)
     @@build_directory = directory
   end
 
   def build_directory
-    @@build_directory or '/var/tmp/rivendell-debian'
+    @@build_directory or '/var/tmp/debian'
   end
 
 end
@@ -103,7 +103,7 @@ class PBuilder
 
   def remote_exec(command, *arguments)
     local_build_directory = PBuilder.build_directory
-    remote_build_directory = "/var/tmp/rivendell-debian"
+    remote_build_directory = "/var/tmp/debian"
 
     sh "rsync -av --no-owner --no-group --no-perms --cvs-exclude --exclude=Rakefile --delete #{local_build_directory}/ #{build_host}:#{remote_build_directory}/"
 
@@ -165,7 +165,7 @@ class Distribution
     [ :unstable, :intrepid ].include? distribution
   end
   
-  @@local_names = { :stable => 'etch', :testing => 'lenny', :intrepid => 'ubuntu', :hardy => 'hardy' }
+  @@local_names = { :stable => 'lenny', :testing => 'squeeze', :intrepid => 'ubuntu', :hardy => 'hardy' }
   def local_name
     @@local_names[distribution]
   end
@@ -590,7 +590,7 @@ namespace "package" do
   
   packages << :rivendell
   Package.new(:rivendell) do |t|
-    t.version = '1.2.2'
+    t.version = '1.3.0'
     t.debian_increment = 1
   end
 
