@@ -16,7 +16,7 @@ namespace "package" do
   main_source_provider = TarballSourceProvider.new('http://www.rivendellaudio.org/ftpdocs/#{name}/#{name}-#{version}.tar.gz')
   
   Package.new(:rivendell) do |p|
-    p.version = '1.3.0'
+    p.version = '1.4.0'
     p.debian_increment = 1
     p.source_provider = main_source_provider
   end
