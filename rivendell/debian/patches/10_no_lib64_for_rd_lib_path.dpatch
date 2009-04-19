@@ -1,0 +1,26 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 10_no_lib64_for_rd_lib_path.dpatch by  <alban.peignier@free.fr>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Disable explicit lib64/ usage for amd64
+
+@DPATCH@
+
+diff --git a/configure.in b/configure.in
+index 4d9cfd0..cafd3f8 100644
+--- a/configure.in
++++ b/configure.in
+@@ -238,11 +238,8 @@ else
+   AC_SUBST(RPM_ROOT,/usr/src/packages)
+   AC_SUBST(VENDOR,suse)
+ fi 
+-if test $ar_gcc_arch = x86_64 ; then
+-  AC_SUBST(RD_LIB_PATH,lib64)
+-else
+-  AC_SUBST(RD_LIB_PATH,lib)
+-fi
++# Always use lib debian/ubuntu
++AC_SUBST(RD_LIB_PATH,lib)
+ 
+ AC_CONFIG_FILES([rivendell.spec \
+     ./Makefile \

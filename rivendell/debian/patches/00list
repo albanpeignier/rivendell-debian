@@ -1,6 +1,4 @@
 # This is part of the dpatch infrastructure.
 # See dpatch (1) in the man pages for more info.
 # Brief summary is to uncomment patches to be applied in this file.
-
-
-10_rdpopup-include-stdlib
+10_no_lib64_for_rd_lib_path
