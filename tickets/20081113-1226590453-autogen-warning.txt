@@ -1,0 +1,20 @@
+Description: autogen warnings
+Platforms: all
+
+[ -x ./autogen.sh ] && ./autogen.sh
+libtoolize: putting auxiliary files in `.'.
+libtoolize: linking file `./ltmain.sh'
+libtoolize: You should add the contents of the following files to `aclocal.m4':
+libtoolize:   `/usr/share/aclocal/libtool.m4'
+libtoolize:   `/usr/share/aclocal/ltoptions.m4'
+libtoolize:   `/usr/share/aclocal/ltversion.m4'
+libtoolize:   `/usr/share/aclocal/ltsugar.m4'
+libtoolize:   `/usr/share/aclocal/lt~obsolete.m4'
+libtoolize: Consider adding `AC_CONFIG_MACRO_DIR([m4])' to configure.in and
+libtoolize: rerunning libtoolize, to keep the correct libtool macros in-tree.
+libtoolize: Consider adding `-I m4' to ACLOCAL_AMFLAGS in Makefile.am.
+configure.in:25: warning: AC_INIT: not a literal: `cat PACKAGE_VERSION`
+configure.in:25: warning: AC_INIT: not a literal: `cat PACKAGE_VERSION`
+configure.in:43: installing `./config.guess'
+configure.in:43: installing `./config.sub'
+configure.in:25: warning: AC_INIT: not a literal: `cat PACKAGE_VERSION`

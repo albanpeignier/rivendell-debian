@@ -1,8 +1,0 @@
-Description: hpklinux-source
-Platform: unstable_i386
-
-  CC [M]  /usr/src/modules/hpklinux-module/drv/hpimod.o
-/usr/src/modules/hpklinux-module/drv/hpimod.c: In function 'hpimod_cleanup':
-/usr/src/modules/hpklinux-module/drv/hpimod.c:487: error: implicit declaration of function 'class_device_destroy'
-/usr/src/modules/hpklinux-module/drv/hpimod.c: In function 'hpimod_init':
-/usr/src/modules/hpklinux-module/drv/hpimod.c:564: error: implicit declaration of function 'class_device_create'
