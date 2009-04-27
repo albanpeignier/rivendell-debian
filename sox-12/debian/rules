@@ -1,0 +1,21 @@
+#!/usr/bin/make -f
+# -*- mode: makefile; coding: utf-8 -*-
+
+DEB_TAR_SRCDIR := sox-12.17.9
+
+include /usr/share/cdbs/1/rules/tarball.mk
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/autotools.mk
+include /usr/share/cdbs/1/rules/simple-patchsys.mk
+
+DEB_CONFIGURE_EXTRA_FLAGS := --disable-lame
+DEB_MAKE_INSTALL_TARGET = all
+
+binary-post-install/sox-12::
+	mv debian/sox-12/usr/bin/sox debian/sox-12/usr/bin/sox-12
+	mv debian/sox-12/usr/bin/soxmix debian/sox-12/usr/bin/soxmix-12
+	mv debian/sox-12/usr/bin/play debian/sox-12/usr/bin/play-12
+
+	mv debian/sox-12/usr/share/man/man1/sox.1 debian/sox-12/usr/share/man/man1/sox-12.1
+	mv debian/sox-12/usr/share/man/man1/soxexam.1 debian/sox-12/usr/share/man/man1/soxexam-12.1
+	mv debian/sox-12/usr/share/man/man1/play.1 debian/sox-12/usr/share/man/man1/play-12.1

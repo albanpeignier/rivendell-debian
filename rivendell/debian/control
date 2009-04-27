@@ -7,7 +7,7 @@ Standards-Version: 3.6.1
  
 Package: rivendell
 Architecture: i386 amd64
-Depends: ${shlibs:Depends}, bc, cdda2wav, cdparanoia, flac, lame, libqt3-mt-mysql | libqt3c102-mt-mysql, mpg321, sox, libsox-fmt-all, vorbis-tools
+Depends: ${shlibs:Depends}, bc, cdda2wav, cdparanoia, flac, lame, libqt3-mt-mysql | libqt3c102-mt-mysql, mpg321, sox-12, vorbis-tools
 Recommends: jackd, logrotate, lftp
 Description: contains a set of functionality needed to operate a radio automation system
  It consisting of the following components:

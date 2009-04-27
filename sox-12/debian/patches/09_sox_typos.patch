@@ -1,0 +1,57 @@
+diff -ruN sox-12.17.7-old/sox.1 sox-12.17.7/sox.1
+--- sox-12.17.7-old/sox.1	2004-12-20 20:43:48.000000000 +0100
++++ sox-12.17.7/sox.1	2005-07-15 18:21:23.000000000 +0200
+@@ -251,7 +251,7 @@
+ logarithmically but this adjusts the amplitude linearly.
+ .br
+ As with other format options, the volume option effects the
+-file its specified with.  This is useful whe processing mutiple
++file its specified with.  This is useful when processing multiple
+ input files as the volume adjustment can be specified for each
+ input file or just once to adjust the output file.  This can be
+ compared to an audio mixer were you can control the volume of
+@@ -282,7 +282,7 @@
+ A-law and u-law data is sometimes encoded using a reversed bit-ordering
+ (ie. MSB becomes LSB).  Internally, SoX understands how to work with
+ this encoding but there is currently no command line option to
+-specify it.  If you need this support then you can use the psuedo
++specify it.  If you need this support then you can use the pseudo
+ file types of ".la" and ".lu" to inform sox of the encoding.  See
+ supported file types for more information.
+ .br
+@@ -690,7 +690,7 @@
+ in quad-channel files so select the exact channel to prevent this.
+ 
+ The avg effect can also be invoked with up to 16 double-precision
+-numbers, seperated by commas, which specify the proportion (0.0 = 0% and 1.0 = 100%) 
++numbers, separated by commas, which specify the proportion (0.0 = 0% and 1.0 = 100%) 
+ of each input channel that is to be mixed into each output channel.
+ In two-channel mode, 4 numbers are given: l->l, l->r, r->l, and r->r,
+ respectively.
+@@ -940,7 +940,7 @@
+ 
+ Multi-band compander is similar to the single band compander but
+ the audio file is first divided up into bands and then the compander
+-is ran on each band.  See the \fBcompand\fR effect for definition of its options.  Compand options are specified between double quotes and the crossover frequency for that band is specefied seperately with \fIxover_fre\fR.  This can be repeated multiple times to create multiple bands.
++is ran on each band.  See the \fBcompand\fR effect for definition of its options.  Compand options are specified between double quotes and the crossover frequency for that band is specified separately with \fIxover_fre\fR.  This can be repeated multiple times to create multiple bands.
+ .TP
+ noiseprof [\fIprofile-file\fR]
+ .TP 10
+@@ -956,7 +956,7 @@
+ 
+ To actually remove the noise, run SoX again with the \fInoisered\fR filter. The
+ filter needs one argument, \fIprofile-file\fR, which contains the noise profile
+-from noiseprof. \fIthershold\fR specifies how much noise should be removed, and
++from noiseprof. \fIthreshold\fR specifies how much noise should be removed, and
+ may be between 0 and 1 with a default of 0.5. Higher values will remove more
+ noise but present a greater possibility of distorting the desired audio signal.
+ Experiment with different threshold values to find the optimal one for your
+@@ -1165,7 +1165,7 @@
+   output_rate/gcd(input_rate,output_rate) <= 511
+ .br
+ .TP 10
+-reverb \fIgain-out reverbe-time delay \fR[ \fIdelay ... \fR]
++reverb \fIgain-out reverb-time delay \fR[ \fIdelay ... \fR]
+ Add reverberation to a sound sample.  Each delay is given 
+ in milliseconds and its feedback is depending on the
+ reverb-time in milliseconds.  Each delay should be in 

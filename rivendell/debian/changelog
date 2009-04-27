@@ -1,4 +1,11 @@
-rivendell (1.4.0-1) UNRELEASED; urgency=low
+rivendell (1.4.0-2) UNRELEASED; urgency=low
+
+  * Replace sox by sox-12 in dependencies (problem with sox 14.2)
+  * Use /usr/bin/sox-12 in rd_import_file and rd_export_file file
+
+ -- Alban Peignier <alban.peignier@free.fr>  Sun, 26 Apr 2009 19:46:04 +0200
+
+rivendell (1.4.0-1) unstable; urgency=low
 
   * New upstream release
 

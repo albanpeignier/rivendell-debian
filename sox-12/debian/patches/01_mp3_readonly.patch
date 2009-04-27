@@ -1,0 +1,12 @@
+diff -ruN sox-12.17.5-old/sox.c sox-12.17.5/sox.c
+--- sox-12.17.5-old/src/sox.c	2004-08-03 23:14:49.000000000 +0200
++++ sox-12.17.5/src/sox.c	2004-08-16 11:38:01.000000000 +0200
+@@ -1224,6 +1224,8 @@
+             for (i = 0; st_formats[i].names != NULL; i++) {
+                 /* only print the first name */
+                 fprintf(stderr, "%s ", st_formats[i].names[0]);
++		if (!strcmp(st_formats[i].names[0],"mp3"))
++			fprintf(stderr,"(readonly) ");
+             }
+             fputc('\n', stderr);
+         }

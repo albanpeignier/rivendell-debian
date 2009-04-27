@@ -1,0 +1,143 @@
+diff -ruN sox-12.17.5-old/src/play.in sox-12.17.5/play.in
+--- sox-12.17.5-old/src/play.in	2004-07-31 04:01:50.000000000 +0200
++++ sox-12.17.5/src/play.in	2004-08-16 12:27:16.000000000 +0200
+@@ -14,16 +14,10 @@
+ 
+ # Set up path so that it can find Sox if user's path doesn't already
+ # include it.
+-prefix=@prefix@
+-exec_prefix=@exec_prefix@
+-bindir=@bindir@
+-
+-# Look for sox in install directory first and then in current direction
+-# if not found.
+-PATH="$bindir:.:$PATH"
+ 
++PATH=$PATH
+ program_name=`basename $0`
+-program_version="2.0"
++program_version="2.0-debian"
+ 
+ if [ -z "$1" ]; then
+     echo "\
+@@ -32,6 +26,8 @@
+     exit 1
+ fi
+ 
++[ -t 1 ] || silent=1 # don't show anything if stdout isn't a tty
++
+ version()
+ {
+     echo "$program_name (sox) $program_version"
+@@ -58,6 +54,7 @@
+       --file                   next argument is FILE
+   -h, --help                   display this help and exit
+       --version                output version information and exit
++      --silent                 do not display filename of currently played file
+ 
+ EFFECTs are one or more of the following:  avg, band, chorus, copy, cut, 
+ deemph, echo, echos, flanger, highp, lowp, map, mask, phaser, pick, polyphase
+@@ -68,6 +65,7 @@
+     exit 0
+ }
+ 
++count=0
+ 
+ # loop over arguments
+ while [ $# -ne 0 ]; do
+@@ -130,8 +128,8 @@
+ 	    ;;
+ 	--file)
+ 	    shift
+-	    if [ -z "$filename" ]; then
+-		filename="$1"
++	    if [ -z "$filename_0" ]; then
++		filename_0="$1"
+ 	    else
+ 		echo "Filename already given.  Ignoring extra name: $1" 1>&2
+ 	    fi
+@@ -145,24 +143,28 @@
+ 	--version)
+ 	    version
+ 	    ;;
++        --silent)
++            silent=1
++            ;;
+ 	-)
+-	    filename="-"
++	    eval filename_$count=-
++            count=$(($count+1))
+ 	    ;;
+ 	-*)
+-	    fopts="$fopts $1"
++	    echo "Unknown option $1, ignoring"
+ 	    ;;
+ 	*)
+-	    if [ -z "$filename" ]; then
+-		filename="$1"
+-	    else
+-		echo "Filename already given.  Ignoring extra name: $1" 1>&2
+-	    fi
+-	    
++	    eval filename_$count='"$1"'
++            count=$(($count+1))
+ 	    ;;
+     esac
+     shift
+ done
+ 
++
++[ "$count" -ne 0 ] || help
++
++
+ arch=`uname -s`
+ case $arch in
+   SunOS)
+@@ -184,7 +186,11 @@
+   Linux|FreeBSD)
+     arch_defines="-t ossdsp"
+     if [ -z "$device" ]; then
+-	device="/dev/dsp"
++       if [ -c "/dev/sound/dsp" ]; then
++           device="/dev/sound/dsp"
++       else
++           device="/dev/dsp"
++       fi
+     fi
+     ;;
+   NetBSD)
+@@ -195,24 +201,25 @@
+     ;;
+ esac
+ 
+-# If user sets AUDIODEV environment variable then force output device
+-# to by that.  Solaris SunRay's make use of this for sure.
+-if [ -n "$AUDIODEV" ]; then
+-    device="$AUDIODEV"
+-fi
+-
+ # If name is "rec" then record else assume user is wanting to play
+ # a sound file.
+ if [ "$program_name" = "rec" ]; then
+ 
+     # Don't send data to stdout if they are reading from it.
+-    if [ "$filename" = "-" ]; then
++    if [ "$filename_0" = "-" ]; then
+       echo "Send break (control-c) to end recording" 1>&2
+     else
+       echo "Send break (control-c) to end recording"
+     fi
+-    sox $volume $arch_defines $fopts $device $fopts2 "$filename" $effects 
++    sox $volume $arch_defines $fopts $device $fopts2 "$filename_0" $effects 
+ 
+ else
+-    sox $volume $fopts $fopts2 "$filename" $arch_defines $device $effects
++    i=0
++    while test $i -lt $count; do
++	if test -z "$silent"; then
++	    eval 'echo "playing $filename_'$i'"'
++	fi
++	eval 'sox $volume $fopts $fopts2 "$filename_'$i'" $arch_defines $device $effects'
++	i=$(($i+1))
++    done
+ fi

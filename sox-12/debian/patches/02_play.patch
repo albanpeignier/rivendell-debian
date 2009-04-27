@@ -1,0 +1,306 @@
+diff -ruN sox-12.17.9-old/src/play.in sox-12.17.9/src/play.in
+--- sox-12.17.9-old/src/play.in	2005-11-07 03:55:28.000000000 +0100
++++ sox-12.17.9/src/play.in	2005-12-15 13:09:13.000000000 +0100
+@@ -5,9 +5,7 @@
+ # Originally developed by Chris Bagwell (cbagwell@sprynet.com)
+ #
+ #   TODO:  Put each set of fopts and filenames on an array and then 
+-#          play each filename back with the given effect. This
+-#          would allow the files to be of different data types
+-#          and sample rates.
++#          play each filename back with the given effect.h
+ #
+ # Change History:
+ #
+@@ -16,24 +14,10 @@
+ 
+ # Set up path so that it can find Sox if user's path doesn't already
+ # include it.
+-prefix=@prefix@
+-exec_prefix=@exec_prefix@
+-bindir=@bindir@
+-
+-HAVE_ALSA=@NEED_ALSA@
+-HAVE_OSS=@NEED_OSS@
+-HAVE_SUNAU=@NEED_ALSA@
+-
+-# Look for sox in install directory first and then in current direction
+-# if not found.
+-PATH="$bindir:.:$PATH"
+ 
++PATH=$PATH
+ program_name=`basename $0`
+-rec_mode="no"
+-if [ "$program_name" = "rec" ]; then
+-    rec_mode="yes"
+-fi
+-program_version="3.0"
++program_version="2.0-debian"
+ 
+ if [ -z "$1" ]; then
+     echo "\
+@@ -42,6 +26,8 @@
+     exit 1
+ fi
+ 
++[ -t 1 ] || silent=1 # don't show anything if stdout isn't a tty
++
+ version()
+ {
+     echo "$program_name (sox) $program_version"
+@@ -51,25 +37,11 @@
+ help()
+ {
+     echo "\
+-Usage: $program_name [GENERAL OPTIONS] [FORMAT OPTIONS] FILE [EFFECT]...
++Usage: $program_name [OPTION]... FILE [EFFECT]...
+ Play/record sound files to/from unix style sound devices.
+ 
+-GENERAL OPTIONS:
+-
+-General options should only be specified one.
+-
+-  -d, --device=DEVICE          use DEVICE for input/output
+-  -V, --verbose                print verbose information
+-  -h, --help                   display this help and exit
+-      --version                output version information and exit
+-
+-FORMAT OPTIONS:
+-
+-File options can be specified for each filename.  Multiple filenames can
+-be specified when playing audio files but they must all be of
+-the data type and sample rates.
+-
+   -c, --channels=CHANNELS      specifies the number of sound channels in FILE
++  -d, --device=DEVICE          use DEVICE for input/output
+   -f, --format=FORMAT          specifies bit format of sample
+                                FORMAT is either s, u, U, A, a, or g
+   -r, --rate=RATE              sample rate in hertz of FILE
+@@ -79,17 +51,22 @@
+   -v, --volume=VOLUME          change amplitude
+   -x, --xinu                   reverse bit order of sample
+                                (only works with 16-bit and 32-bit integer data)
+-      --file=FILENAME          specify filename
++      --file                   next argument is FILE
++  -h, --help                   display this help and exit
++      --version                output version information and exit
++      --silent                 do not display filename of currently played file
+ 
+ EFFECTs are one or more of the following:  avg, band, chorus, copy, cut, 
+-deemph, echo, echos, flanger, highp, lowp, map, mask, phaser, pick,
+-polyphase, rate, repeat, resample, reverb, reverse, split, stat, vibro.
++deemph, echo, echos, flanger, highp, lowp, map, mask, phaser, pick, polyphase
++rate, repeat, resample, reverb, reverse, split, stat, vibro.
+ 
+ See sox man page for detailed information on supported file types, data
+ formats, and effect options."
+     exit 0
+ }
+ 
++count=0
++
+ # loop over arguments
+ while [ $# -ne 0 ]; do
+     case "$1" in
+@@ -141,30 +118,21 @@
+ 	    ;;
+ 	-v)
+ 	    shift
+-	    fopts2="$fopts2 -v $1"
++	    volume="-v $1"
+ 	    ;;
+ 	--volume=*)
+-	    fopts2="$fopts2 -v `echo $1 | sed 's/.*=//'`"
++	    volume="-v `echo $1 | sed 's/.*=//'`"
+ 	    ;;
+-        -V|--verbose)
+-            gopts="$gopts -V"
+-            ;;
+ 	-x|--xinu)
+ 	    fopts="$fopts -x"
+ 	    ;;
+-	--file=*)
+-            if [ $rec_mode = "yes" ]; then
+-	        if [ -z "$filename" ]; then
+-                    filename=`echo $1 | sed 's/.*=//'`
+-                else
+-                    echo "Filename already given.  Ignoring extra name: $1" 1>&2
+-	        fi
+-            else
+-                filename=`echo $1 | sed 's/.*=//'`
+-                play_opts="$play_opts $fopts $fopts2 \"$filename\""
+-                fopts=""
+-                fopts2=""
+-            fi
++	--file)
++	    shift
++	    if [ -z "$filename_0" ]; then
++		filename_0="$1"
++	    else
++		echo "Filename already given.  Ignoring extra name: $1" 1>&2
++	    fi
+ 	    ;;
+ 	-h)
+ 	    help
+@@ -175,104 +143,83 @@
+ 	--version)
+ 	    version
+ 	    ;;
++        --silent)
++            silent=1
++            ;;
+ 	-)
+-            if [ $rec_mode = "yes" ]; then
+-	        if [ -z "$filename" ]; then
+-	            filename="-"
+-                else
+-                    echo "Filename already given.  Ignoring extra name: $1" 1>&2
+-	        fi
+-            else
+-                filename="-"
+-                play_opts="$play_opts $fopts $fopts2 \"$filename\""
+-                fopts=""
+-                fopts2=""
+-            fi
++	    eval filename_$count=-
++            count=$(($count+1))
++	    ;;
++	-*)
++	    echo "Unknown option $1, ignoring"
+ 	    ;;
+ 	*)
+-            if [ $rec_mode = "yes" ]; then
+-	        if [ -z "$filename" ]; then
+-	            filename="$1"
+-                else
+-                    echo "Filename already given.  Ignoring extra name: $1" 1>&2
+-	        fi
+-            else
+-                filename=`echo $1 | sed 's/\ /\\\ /g'`
+-                filename=$1
+-                play_opts="$play_opts $fopts $fopts2 \"$filename\""
+-                fopts=""
+-                fopts2=""
+-            fi
++	    eval filename_$count='"$1"'
++            count=$(($count+1))
+ 	    ;;
+     esac
+     shift
+ done
+ 
+-# If user sets AUDIODEV environment variable then force output device
+-# to by that.  Solaris SunRay's make use of this for sure.
+-if [ -n "$AUDIODEV" ]; then
+-    device="$AUDIODEV"
+-fi
+ 
+-if [ "$HAVE_ALSA" = "1" ]; then
+-    arch_defines="-t alsa"
++[ "$count" -ne 0 ] || help
++
++
++arch=`uname -s`
++case $arch in
++  SunOS)
++    case `uname -r` in
++        # Solaris software can auto-detect hardware capabilities.
++        5.*)
++	    arch_defines="-t sunau"
++	    ;;
++	# For SunOS default to signed words.  Some hardware can only play u-law and would need
++	# to be changed here.
++	*)
++	    arch_defines="-t sunau -w -s"
++	    ;;
++    esac
+     if [ -z "$device" ]; then
+-	device="default"
++	device="/dev/audio"
+     fi
+-else
+-    if [ "$HAVE_OSS" = "1" ]; then
+-        arch_defines="-t ossdsp"
+-        if [ -z "$device" ]; then
+-            device="/dev/dsp"
+-        fi
+-    else
+-        arch=`uname -s`
+-        case $arch in
+-            SunOS)
+-            case `uname -r` in
+-                # Solaris software can auto-detect hardware capabilities.
+-                5.*)
+-                arch_defines="-t sunau"
+-                ;;
+-                # For SunOS default to signed words.  Some hardware can only play u-law and would need
+-                # to be changed here.
+-                *)
+-                arch_defines="-t sunau -w -s"
+-                ;;
+-            esac
+-            if [ -z "$device" ]; then
+-                device="/dev/audio"
+-            fi
+-            ;;
+-            NetBSD|OpenBSD)
+-            arch_defines="-t sunau"
+-            if [ -z "$device" ]; then
+-                device="/dev/audio"
+-            fi
+-            ;;
+-        esac
++    ;;
++  Linux|FreeBSD)
++    arch_defines="-t ossdsp"
++    if [ -z "$device" ]; then
++       if [ -c "/dev/sound/dsp" ]; then
++           device="/dev/sound/dsp"
++       else
++           device="/dev/dsp"
++       fi
+     fi
+-fi
++    ;;
++  NetBSD|OpenBSD)
++    arch_defines="-t sunau"
++    if [ -z "$device" ]; then
++        device="/dev/audio"
++    fi
++    ;;
++esac
+ 
+ # If name is "rec" then record else assume user is wanting to play
+ # a sound file.
+-if [ "$rec_mode" = "yes" ]; then
++if [ "$program_name" = "rec" ]; then
+ 
+     # Don't send data to stdout if they are reading from it.
+-    if [ "$filename" = "-" ]; then
++    if [ "$filename_0" = "-" ]; then
+       echo "Send break (control-c) to end recording" 1>&2
+     else
+       echo "Send break (control-c) to end recording"
+     fi
+-    # $fopts are specified on both sides because audio driver
+-    # may not support the given format and might pick
+-    # something close to it.  Asume user really wants the
+-    # file to be in the specified format and so request
+-    # sox to do any conversions.
+-    sox $gopts $arch_defines $fopts $device $fopts $fopts2 "$filename" $effects 
++    sox $volume $arch_defines $fopts $device $fopts2 "$filename_0" $effects 
++
+ else
+-    # Eval is needed to recongnize the quotes around filename
+-    # and let them be passed to program as 1 option (in case
+-    # filename has spaces).
+-    eval sox $gopts $play_opts $arch_defines $device $effects
++    i=0
++    while test $i -lt $count; do
++	if test -n "$silent"; then
++	    fopts="-q $fopts"
++	fi
++	eval 'sox $volume $fopts $fopts2 "$filename_'$i'" $arch_defines $device $effects'
++	i=$(($i+1))
++    done
+ fi
