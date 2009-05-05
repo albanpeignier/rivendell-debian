@@ -1,4 +1,10 @@
-rivendell (1.4.0-2) UNRELEASED; urgency=low
+rivendell (1.4.0-3) UNRELEASED; urgency=low
+
+  * Add toolame in conflicted packages
+
+ -- Alban Peignier <alban.peignier@free.fr>  Tue, 05 May 2009 23:14:39 +0200
+
+rivendell (1.4.0-2) unstable; urgency=low
 
   * Replace sox by sox-12 in dependencies (problem with sox 14.2)
   * Use /usr/bin/sox-12 in rd_import_file and rd_export_file file
