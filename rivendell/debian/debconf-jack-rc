@@ -1,0 +1,19 @@
+#!/bin/bash -e
+
+. `dirname $0`/debconf.sh
+
+db_get rivendell/audioadapters/selections
+if ! echo "$RET" | grep -qs "JACK"; then
+    exit 0
+fi
+
+# generate global /etc/jackdrc configuration file
+file=${1:-"/etc/jackdrc"}
+
+backup_file $file
+
+db_get rivendell/format/samplerate
+echo "/usr/bin/jackd --realtime --temporary --driver alsa --rate $RET" > $file
+
+# FIXME: unfortunately jackd cannot parse comments, so none can be added at this time to /etc/jackdrc
+

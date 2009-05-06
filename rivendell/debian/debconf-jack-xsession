@@ -1,0 +1,19 @@
+#!/bin/bash -e
+
+set -x
+
+. `dirname $0`/debconf.sh
+
+db_get rivendell/audioadapters/selections
+if ! echo "$RET" | grep -qs "JACK"; then
+    exit 0
+fi
+
+# generate global X11 Xsession.d configuration file to set JACK_START_SERVER environment variable
+file=${1:-"/etc/X11/Xsession.d/98jack-environment"}
+
+write_input_into $file <<EOF
+# set environment variable for JACK to start if not running
+# (NOTE: /etc/jackdrc is read for the jackd command line).
+export JACK_START_SERVER=1
+EOF

@@ -1,0 +1,42 @@
+#!/bin/bash -e
+
+. `dirname $0`/debconf.sh
+
+# populate PAM scripts with pam_rd hooks if requested by the user and it is not already in there
+db_get rivendell/run_mode
+if [ "$RET" != "pam_rd" ]; then
+    exit 0
+fi
+
+if [ ! -f "/lib/security/pam_rd.so" ]; then
+    echo "pam_rd library isn't provided by the release of rivendell package. Try initd run_mode instead."
+    exit 1
+fi
+
+display_manager=`cat /etc/X11/default-display-manager`
+display_manager=`basename "$display_manager"`
+
+file=${1:-"/etc/pam.d/$display_manager"}
+
+if [ ! -f $file ]; then
+    echo "Can't find $file to install pam_rd.so. Try initd run_mode instead."
+    exit 1
+fi
+
+if grep -qs "pam_rd.so" $file; then
+    # File already modified
+    exit 0
+fi
+
+backup_file $file
+
+# sed command to 
+# replace (substitute):
+#   @include common-auth
+# with
+#   auth       optional     pam_rd.so   debug kill_rd_daemons destroy_shm ignore_pass \\
+#   @include common-auth
+# note only 1 backslash after first line, as we don't want an extra blank line in the output file.
+sed -i -e "s/^[[:space:]]*@include common-auth[[:space:]]*/\
+auth       optional     pam_rd.so   debug kill_rd_daemons destroy_shm ignore_pass \\
+@include common-auth/" $file

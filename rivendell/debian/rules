@@ -78,6 +78,8 @@ install: build
 	install -m 644 $(CURDIR)/debian/rdpanel.desktop $(CURDIR)/debian/tmp/usr/share/applications
 	install -m 644 $(CURDIR)/debian/rdcastmanager.desktop $(CURDIR)/debian/tmp/usr/share/applications
 
+	install $(CURDIR)/debian/debconf* $(CURDIR)/debian/tmp/usr/share/rivendell/debconf
+
 	dh_install --sourcedir=debian/tmp --autodest $(DH_INSTALL_OPTIONS)
 
 # Build architecture-independent files here.
