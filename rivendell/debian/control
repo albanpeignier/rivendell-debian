@@ -4,11 +4,12 @@ Priority: optional
 Maintainer: Alban Peignier <alban.peignier@free.fr>
 Build-Depends: debhelper, autoconf, automake1.9, dpatch, libtool, libjack-dev, libqt3-mt-dev, libasound2-dev, libsamplerate0-dev, libvorbis-dev, libtag1-dev, libid3-dev, libflac-dev, libpam0g-dev, libhpi-dev
 Standards-Version: 3.6.1
-Conflicts: toolame
+
 Package: rivendell
 Architecture: i386 amd64
 Depends: ${shlibs:Depends}, bc, cdda2wav, cdparanoia, flac, libqt3-mt-mysql | libqt3c102-mt-mysql, mpg321, sox-12, vorbis-tools
 Recommends: jackd, logrotate, lftp, lame
+Conflicts: toolame
 Description: contains a set of functionality needed to operate a radio automation system
  It consisting of the following components:
  .
