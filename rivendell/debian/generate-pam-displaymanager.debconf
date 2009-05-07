@@ -9,7 +9,7 @@ if [ "$RET" != "pam_rd" ]; then
 fi
 
 if [ ! -f "/lib/security/pam_rd.so" ]; then
-    echo "pam_rd library isn't provided by the release of rivendell package. Try initd run_mode instead."
+    echo "pam_rd library isn't provided by the release of rivendell package. Try init.d run_mode instead."
     exit 1
 fi
 
@@ -29,6 +29,7 @@ if grep -qs "pam_rd.so" $file; then
 fi
 
 backup_file $file
+echo "Modify $file to use pam_rd"
 
 # sed command to 
 # replace (substitute):

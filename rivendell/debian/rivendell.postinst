@@ -20,7 +20,7 @@ case "$1" in
         db_get rivendell/debconfenable
         if [ "$RET" = "true" ]; then
             # Files generated with debconf values are created by these scripts
-            run-parts --regexp "debconf-.*" /usr/share/rivendell/debconf/
+            run-parts --exit-on-error --regex="\.debconf$" /usr/share/rivendell/debconf/
         fi
 
         db_stop # End of debconf section

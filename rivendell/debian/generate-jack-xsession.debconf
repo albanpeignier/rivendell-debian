@@ -1,7 +1,5 @@
 #!/bin/bash -e
 
-set -x
-
 . `dirname $0`/debconf.sh
 
 db_get rivendell/audioadapters/selections

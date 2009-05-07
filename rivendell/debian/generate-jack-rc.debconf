@@ -11,6 +11,7 @@ fi
 file=${1:-"/etc/jackdrc"}
 
 backup_file $file
+log_file_generation $file
 
 db_get rivendell/format/samplerate
 echo "/usr/bin/jackd --realtime --temporary --driver alsa --rate $RET" > $file

@@ -1,0 +1,10 @@
+#!/bin/bash -e
+
+. `dirname $0`/debconf.sh
+
+# generate global X11 Xsession.d configuration file to set JACK_START_SERVER environment variable
+file=${1:-"/etc/default/rivendell"}
+
+write_input_into $file <<EOF
+RUN_MODE=`db_print run_mode`
+EOF
