@@ -5,5 +5,5 @@ Comment=Rivendell Airplay
 Exec=rdairplay
 Terminal=false
 Type=Application
-Icon=/usr/share/srlabs/rdairplay.xpm
+Icon=/usr/share/rivendell/rdairplay.xpm
 Categories=Application;AudioVideo;

@@ -1,5 +1,3 @@
 usr/bin
 usr/sbin
-usr/share/applications/rd*.desktop
-usr/share/srlabs/rd*.qm
-usr/share/srlabs/rd*.xpm
+usr/share/rivendell/rd*.qm

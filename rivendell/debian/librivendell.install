@@ -3,4 +3,4 @@ usr/lib/librdhpi-*.so
 usr/lib/librdhpi.so
 usr/lib/librd-*.so
 usr/lib/librd.so
-usr/share/srlabs/librd*.qm
+usr/share/rivendell/librd*.qm

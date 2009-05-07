@@ -5,5 +5,5 @@ Comment=Rivendell Log Manager
 Exec=rdlogmanager
 Terminal=false
 Type=Application
-Icon=/usr/share/srlabs/rdlogmanager.xpm
+Icon=/usr/share/rivendell/rdlogmanager.xpm
 Categories=Application;AudioVideo;

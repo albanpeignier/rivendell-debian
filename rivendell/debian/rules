@@ -58,29 +58,27 @@ install: build
 	$(MAKE) DESTDIR=`pwd`/debian/tmp prefix=/usr install-debian
 #	rm -f `pwd`/debian/tmp/usr/bin/toolame
 
-	install -m 644 $(CURDIR)/debian/rdadmin.xpm $(CURDIR)/debian/tmp/usr/share/srlabs
-	install -m 644 $(CURDIR)/debian/rdairplay.xpm $(CURDIR)/debian/tmp/usr/share/srlabs
-	install -m 644 $(CURDIR)/debian/rdcatch.xpm $(CURDIR)/debian/tmp/usr/share/srlabs
-	install -m 644 $(CURDIR)/debian/rdlibrary.xpm $(CURDIR)/debian/tmp/usr/share/srlabs
-	install -m 644 $(CURDIR)/debian/rdlogedit.xpm $(CURDIR)/debian/tmp/usr/share/srlabs
-	install -m 644 $(CURDIR)/debian/rdlogin.xpm $(CURDIR)/debian/tmp/usr/share/srlabs
-	install -m 644 $(CURDIR)/debian/rdlogmanager.xpm $(CURDIR)/debian/tmp/usr/share/srlabs
-
-	# FIXME: there may be a better way to get this directory created...
-	install -d -m 755 $(CURDIR)/debian/tmp/usr/share/applications
-	install -m 644 $(CURDIR)/debian/rdadmin.desktop $(CURDIR)/debian/tmp/usr/share/applications
-	install -m 644 $(CURDIR)/debian/rdairplay.desktop $(CURDIR)/debian/tmp/usr/share/applications
-	install -m 644 $(CURDIR)/debian/rdcatch.desktop $(CURDIR)/debian/tmp/usr/share/applications
-	install -m 644 $(CURDIR)/debian/rdlibrary.desktop $(CURDIR)/debian/tmp/usr/share/applications
-	install -m 644 $(CURDIR)/debian/rdlogedit.desktop $(CURDIR)/debian/tmp/usr/share/applications
-	install -m 644 $(CURDIR)/debian/rdlogin.desktop $(CURDIR)/debian/tmp/usr/share/applications
-	install -m 644 $(CURDIR)/debian/rdlogmanager.desktop $(CURDIR)/debian/tmp/usr/share/applications
-	install -m 644 $(CURDIR)/debian/rdpanel.desktop $(CURDIR)/debian/tmp/usr/share/applications
-	install -m 644 $(CURDIR)/debian/rdcastmanager.desktop $(CURDIR)/debian/tmp/usr/share/applications
-
-	install $(CURDIR)/debian/debconf* $(CURDIR)/debian/tmp/usr/share/rivendell/debconf
-
 	dh_install --sourcedir=debian/tmp --autodest $(DH_INSTALL_OPTIONS)
+
+	install -m 644 $(CURDIR)/debian/rdadmin.xpm $(CURDIR)/debian/rivendell/usr/share/rivendell
+	install -m 644 $(CURDIR)/debian/rdairplay.xpm $(CURDIR)/debian/rivendell/usr/share/rivendell
+	install -m 644 $(CURDIR)/debian/rdcatch.xpm $(CURDIR)/debian/rivendell/usr/share/rivendell
+	install -m 644 $(CURDIR)/debian/rdlibrary.xpm $(CURDIR)/debian/rivendell/usr/share/rivendell
+	install -m 644 $(CURDIR)/debian/rdlogedit.xpm $(CURDIR)/debian/rivendell/usr/share/rivendell
+	install -m 644 $(CURDIR)/debian/rdlogin.xpm $(CURDIR)/debian/rivendell/usr/share/rivendell
+	install -m 644 $(CURDIR)/debian/rdlogmanager.xpm $(CURDIR)/debian/rivendell/usr/share/rivendell
+
+	install -m 644 $(CURDIR)/debian/rdadmin.desktop $(CURDIR)/debian/rivendell/usr/share/applications
+	install -m 644 $(CURDIR)/debian/rdairplay.desktop $(CURDIR)/debian/rivendell/usr/share/applications
+	install -m 644 $(CURDIR)/debian/rdcatch.desktop $(CURDIR)/debian/rivendell/usr/share/applications
+	install -m 644 $(CURDIR)/debian/rdlibrary.desktop $(CURDIR)/debian/rivendell/usr/share/applications
+	install -m 644 $(CURDIR)/debian/rdlogedit.desktop $(CURDIR)/debian/rivendell/usr/share/applications
+	install -m 644 $(CURDIR)/debian/rdlogin.desktop $(CURDIR)/debian/rivendell/usr/share/applications
+	install -m 644 $(CURDIR)/debian/rdlogmanager.desktop $(CURDIR)/debian/rivendell/usr/share/applications
+	install -m 644 $(CURDIR)/debian/rdpanel.desktop $(CURDIR)/debian/rivendell/usr/share/applications
+	install -m 644 $(CURDIR)/debian/rdcastmanager.desktop $(CURDIR)/debian/rivendell/usr/share/applications
+
+	install $(CURDIR)/debian/*.debconf $(CURDIR)/debian/debconf.sh $(CURDIR)/debian/rivendell/usr/share/rivendell/debconf
 
 # Build architecture-independent files here.
 binary-indep: build install
