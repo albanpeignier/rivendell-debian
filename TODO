@@ -1,0 +1,26 @@
+* test parallel=jobs to the DEB_BUILD_OPTIONS
+* fix LSB warning in init.d/rivendell
+* remove template rivendell/mysql/driver
+* generate alsa asound.rc file with debconf values
+* remove toolame from rivendell binary package
+* move from /usr/bin to /usr/share/rivendell internal executables 
+* add man pages
+* include rivendell plugins (facebook and twitter)
+* remove deprecated logfiles from debconf templates
+   replace with new Logs/Facility and Logs/LogDirectory options
+* check usage of jack files generated with debconf values
+   /etc/jackrc
+   /etc/X11/Xsession.d/98jack-environment
+* add message about security/limits.conf in templates
+* check libhpi dependency 
+   when audioadapters/selections includes "Audioscience HPI"
+* check jackd dependency
+   when audioadapters/selections includes "JACK"
+* (upstream) try to use regular mp3 encoder
+   study toolame modifications
+* (upstream) try to use sox 14.2 
+   study the sample rate bug
+   sox path could be configurable
+* (upstream) simplify rd_import/export_file scripts
+   either by binaries using libsox-dev
+   or ecasound usage
