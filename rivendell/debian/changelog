@@ -3,6 +3,7 @@ rivendell (1.4.0-3) UNRELEASED; urgency=low
   * Add toolame in conflicted packages
   * Generate files with debconf values in several small scripts (in /usr/share/rivendell/debconf)
   * Move lame from Depends to Recommends (unofficial package)
+  * Replace /usr/share/srlabs by /usr/share/rivendell
 
  -- Alban Peignier <alban.peignier@free.fr>  Tue, 05 May 2009 23:14:39 +0200
 
