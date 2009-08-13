@@ -1,4 +1,10 @@
-rivendell (1.4.0-3) UNRELEASED; urgency=low
+rivendell (1.5.0-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Alban Peignier <alban.peignier@free.fr>  Wed, 15 Jul 2009 20:30:46 +0200
+
+rivendell (1.4.0-3) unstable; urgency=low
 
   * Add toolame in conflicted packages
   * Generate files with debconf values in several small scripts (in /usr/share/rivendell/debconf)

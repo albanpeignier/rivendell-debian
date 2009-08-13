@@ -1,4 +1,6 @@
-require 'rubygems'
+$:.unshift << "/home/alban/share/projects/tryphon.org/rake-debian-build/lib"
+
+#require 'rubygems'
 require 'debian/build'
 include Debian::Build
 
@@ -16,8 +18,8 @@ namespace "package" do
   main_source_provider = TarballSourceProvider.new('http://www.rivendellaudio.org/ftpdocs/#{name}/#{name}-#{version}.tar.gz')
   
   Package.new(:rivendell) do |p|
-    p.version = '1.4.0'
-    p.debian_increment = 2
+    p.version = '1.5.0'
+    p.debian_increment = 1
     p.source_provider = main_source_provider
   end
 
