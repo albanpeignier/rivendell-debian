@@ -1,0 +1,20 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## acinclude-fix-leave-bnv_qt_lib_dir.dpatch by  <alban.peignier@free.fr>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Add a nop operation in else/fi in bnv_qt_lib_dir tests
+
+@DPATCH@
+
+diff --git a/acinclude.m4 b/acinclude.m4
+index 47980c7..3370f43 100644
+--- a/acinclude.m4
++++ b/acinclude.m4
+@@ -483,6 +483,7 @@ AC_DEFUN([BNV_PATH_QT_DIRECT],
+               bnv_qt_lib_dir=
+             ], [
+               # Leave bnv_qt_lib_dir defined
++              /bin/true;
+             ])
+           ])
+         ])
