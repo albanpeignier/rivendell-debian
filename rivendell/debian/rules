@@ -18,12 +18,14 @@ CONFIGURE_OPTIONS=--disable-pam
 DH_INSTALL_OPTIONS=--exclude=/lib/security
 endif	
 
+CPPFLAGS+=-fno-stack-protector
+
 configure: configure-stamp
 configure-stamp: patch-stamp
 	dh_testdir
 
 	[ -x ./autogen.sh ] && ./autogen.sh
-	./configure --libexecdir=/usr/lib/cgi-bin/rivendell/ $(CONFIGURE_OPTIONS)
+	./configure --prefix=/usr --libexecdir=/usr/lib/cgi-bin/rivendell/ $(CONFIGURE_OPTIONS)
 
 	touch configure-stamp
 
