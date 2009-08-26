@@ -1,3 +1,23 @@
+rivendell (1.5.2-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Alban Peignier <alban.peignier@free.fr>  Tue, 25 Aug 2009 23:27:54 +0200
+
+rivendell (1.5.1-2) unstable; urgency=low
+
+  * Disable stack-protector
+
+ -- Alban Peignier <alban.peignier@free.fr>  Mon, 24 Aug 2009 22:21:48 +0200
+
+rivendell (1.5.1-1) unstable; urgency=low
+
+  * New upstream release
+  * Remove sox-12
+  * Configure with prefix=/usr
+
+ -- Alban Peignier <alban.peignier@free.fr>  Thu, 13 Aug 2009 21:32:33 +0200
+
 rivendell (1.5.0-1) unstable; urgency=low
 
   * New upstream release
