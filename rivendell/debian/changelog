@@ -1,3 +1,9 @@
+rivendell (1.5.2-2) unstable; urgency=low
+
+  * Create /var/run/rivendell in init.d script, to support tmpfs in /var/run (reported by brownfox)
+
+ -- Alban Peignier <alban.peignier@free.fr>  Thu, 27 Aug 2009 20:28:07 +0200
+
 rivendell (1.5.2-1) unstable; urgency=low
 
   * New upstream release
