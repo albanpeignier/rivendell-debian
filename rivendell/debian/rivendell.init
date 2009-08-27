@@ -27,7 +27,6 @@ if [ ! -d /var/run/rivendell ]; then
     install --directory --mode 02775 --owner="$DAEMON_USER" --group="$AUDIOGROUP" /var/run/rivendell
 fi
 
-
 # Check if Rivendell daemons are started by init scripts or pam_rd.
 if [ "$RUN_MODE" != "init.d" ]; then
     exit 0
@@ -36,6 +35,11 @@ fi
 for daemon in $DAEMONS; do
     test -x /usr/bin/$daemon || exit 0
 done
+
+# Create run directory to store pid files .
+if [ ! -d $PIDDIR ]; then
+    install --directory --mode 02775 --owner="$DAEMON_USER" --group="$AUDIOGROUP" $PIDDIR
+fi
 
 function start() {
     echo -n "Starting $LABEL:"

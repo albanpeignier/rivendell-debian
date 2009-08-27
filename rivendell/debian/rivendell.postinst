@@ -56,11 +56,6 @@ case "$1" in
             install --directory --mode 02775 --owner="$AUDIOUSER" --group="$AUDIOGROUP" "$AUDIOROOT"
         fi
 
-        # Create run directory to store pid files .
-        if [ ! -d /var/run/rivendell ]; then
-            install --directory --mode 02775 --owner="$AUDIOUSER" --group="$AUDIOGROUP" /var/run/rivendell
-        fi
-
         # Create log directory to store log files .
         #FIXME: better integrate with debconf  (debconf currently only has various log file paths).
         if [ ! -d /var/log/rivendell ]; then
