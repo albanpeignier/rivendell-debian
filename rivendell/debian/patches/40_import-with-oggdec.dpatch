@@ -1,0 +1,29 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## import-with-oggdec.dpatch by  <alban.peignier@free.fr>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Read ogg files with oggdec instead of ogg123 (buffer problem with high 
+## DP: quality files)
+
+@DPATCH@
+
+diff --git a/scripts/rd_import_file b/scripts/rd_import_file
+index 7444f53..a9d04b5 100755
+--- a/scripts/rd_import_file
++++ b/scripts/rd_import_file
+@@ -122,12 +122,12 @@ case "$EXTENSION_IN" in
+     ;;
+     ogg)
+     function convert() {
+-       ogg123 -q -d wav -f $2 "$1"
++       oggdec -Q -o $2 "$1"
+     }
+     ;;
+     OGG)
+     function convert() {
+-       ogg123 -q -d wav -f $2 "$1"
++       oggdec -Q -o $2 "$1"
+     }
+     ;;
+     flac)
+

@@ -3,3 +3,5 @@
 # Brief summary is to uncomment patches to be applied in this file.
 10_no_lib64_for_rd_lib_path
 20_acinclude-fix-leave-bnv_qt_lib_dir
+30_includes-for-gcc44
+40_import-with-oggdec

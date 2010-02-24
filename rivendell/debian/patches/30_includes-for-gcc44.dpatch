@@ -1,0 +1,20 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## includes-for-gcc44.dpatch by  <alban.peignier@free.fr>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Gcc 4.4 requires explicit #includes
+
+@DPATCH@
+
+diff --git a/utils/rdaconvert/rdaconvert.h b/utils/rdaconvert/rdaconvert.h
+index a9d93d6..eb3f7d7 100644
+--- a/utils/rdaconvert/rdaconvert.h
++++ b/utils/rdaconvert/rdaconvert.h
+@@ -23,6 +23,7 @@
+ #ifndef RDACONVERT_H
+ #define RDACONVERT_H
+ 
++#include <stdint.h>
+ #include <samplerate.h>
+ 
+ #include <qmainwindow.h>
